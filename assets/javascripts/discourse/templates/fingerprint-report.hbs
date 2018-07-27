@@ -1,0 +1,119 @@
+<div class="dashboard-next">
+
+  <div class="section-top section-columns">
+
+    <!-- Left: User lookup -->
+    <div class="section-column">
+      <div class="section-ttile">
+        <h2>{{i18n 'fingerprint.title'}}</h2>
+      </div>
+      <div class="section-body">
+        {{user-selector single=true
+                        usernames=user
+                        onChangeCallback='updateReport'
+                        placeholderKey='user.username.title'}}
+      </div>
+    </div>
+
+    <!-- Right: User's conflicts -->
+    <div class="section-column">
+      {{#if user}}
+        <div class="section-title">
+          <h2>{{i18n 'fingerprint.conflicts' user=user}}</h2>
+        </div>
+        <div class="section-body">
+          {{#if conflicts.length}}
+            <span>{{i18n 'fingerprint.conflicts_found' count=conflicts.length}}</span>
+            <table>
+              <tr>
+                <th>Other user</th>
+                <th></th>
+              </tr>
+              {{#each conflicts as |u|}}
+                <tr>
+                  <td>
+                    {{#user-link user=u}}
+                      {{avatar u imageSize="medium"}}
+                      {{u.username}}
+                    {{/user-link}}
+                  </td>
+                  <td>
+                    <a {{action 'addIgnore' u.username}}>ignore</a>
+                  </td>
+                </tr>
+              {{/each}}
+            </table>
+          {{else}}
+            {{i18n 'fingerprint.conflicts_not_found'}}
+          {{/if}}
+        </div>
+      {{/if}}
+    </div>
+  </div>
+
+  {{#if user}}
+    <!-- Show more details about selected user. -->
+    <div class="section">
+      <div class="section-title">
+        <h2>{{i18n 'fingerprint.details'}}</h2>
+      </div>
+      <div class="section-body">
+        {{#if fingerprints.length}}
+          <table>
+            <tr>
+              <th>Algorithm</th>
+              <th>Hash value</th>
+              <th>First seen at</th>
+              <th>Last seen at</th>
+              <th>In conflict with</th>
+            </tr>
+            {{#each fingerprints as |f|}}
+            <tr>
+              <td>{{f.type}}</td>
+              <td>{{f.hash}}</td>
+              <td>{{format-date f.first_time}}</td>
+              <td>{{format-date f.last_time}}</td>
+              <td>
+                <p>
+                  {{#each f.conflicts as |u|}}
+                    {{#user-link user=u}}
+                      {{avatar u imageSize="small"}}
+                      {{u.username}}
+                    {{/user-link}}
+                  {{/each}}
+                </p>
+              </td>
+            </tr>
+            {{/each}}
+          </table>
+        {{else}}
+          {{i18n 'fingerprint.none'}}
+        {{/if}}
+      </div>
+    </div>
+  {{else}}
+    <!-- Show latest conflicts if no user was selected. -->
+    <div class="section">
+      <div class="section-title">
+        <h2>{{i18n 'fingerprint.conflicts_latest'}}</h2>
+      </div>
+      <div class="section-body">
+        {{#if all_conflicts.length}}
+          {{#each all_conflicts as |us|}}
+            <div class="row">
+              {{#each us as |u|}}
+                {{#user-link user=u}}
+                  {{avatar u imageSize="small"}}
+                  {{u.username}}
+                {{/user-link}}
+              {{/each}}
+            </div>
+          {{/each}}
+        {{else}}
+          {{i18n 'fingerprint.conflicts_not_found'}}
+        {{/if}}
+      </div>
+    </div>
+  {{/if}}
+
+</div>

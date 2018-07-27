@@ -1,0 +1,7 @@
+plugins:
+  fingerprint_enabled:
+    default: true
+  max_fingerprints:
+    default: 10
+  max_fingerprint_conflicts:
+    default: 50

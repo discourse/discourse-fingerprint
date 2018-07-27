@@ -1,0 +1,10 @@
+en:
+  js:
+    fingerprint:
+      title: 'Fingerprint matcher'
+      details: 'Details'
+      none: 'This user has no recorded fingerprints.'
+      conflicts: 'Conflicts for {{user}}'
+      conflicts_latest: 'Latest conflicts'
+      conflicts_found: '{{count}} user has similar fingerprint.'
+      conflicts_not_found: 'No similar signature were found.'
