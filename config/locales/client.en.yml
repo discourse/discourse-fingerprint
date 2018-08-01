@@ -8,3 +8,10 @@ en:
       conflicts_latest: 'Latest conflicts'
       conflicts_found: '{{count}} user has similar fingerprint.'
       conflicts_not_found: 'No similar signature were found.'
+      other_user: 'Other user'
+      results:
+        algorithm: 'Algorithm'
+        hash_value: 'Hash value'
+        first_seen_at: 'First seen at'
+        last_seen_at: 'Last seen at'
+        in_conflict_with: 'In conflict with'

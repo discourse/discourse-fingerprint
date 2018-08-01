@@ -26,7 +26,7 @@
             <span>{{i18n 'fingerprint.conflicts_found' count=conflicts.length}}</span>
             <table>
               <tr>
-                <th>Other user</th>
+                <th>{{i18n 'fingerprint.other_user'}}</th>
                 <th></th>
               </tr>
               {{#each conflicts as |u|}}
@@ -38,7 +38,7 @@
                     {{/user-link}}
                   </td>
                   <td>
-                    <a {{action 'addIgnore' u.username}}>ignore</a>
+                    <a {{action 'addIgnore' u.username}}>{{i18n 'admin.flags.ignore_flag'}}</a>
                   </td>
                 </tr>
               {{/each}}
@@ -61,11 +61,11 @@
         {{#if fingerprints.length}}
           <table>
             <tr>
-              <th>Algorithm</th>
-              <th>Hash value</th>
-              <th>First seen at</th>
-              <th>Last seen at</th>
-              <th>In conflict with</th>
+              <th>{{i18n 'fingerprint.results.algorithm'}}</th>
+              <th>{{i18n 'fingerprint.results.hash_value'}}</th>
+              <th>{{i18n 'fingerprint.results.first_seen_at'}}</th>
+              <th>{{i18n 'fingerprint.results.last_seen_at'}}</th>
+              <th>{{i18n 'fingerprint.results.in_conflict_with'}}</th>
             </tr>
             {{#each fingerprints as |f|}}
             <tr>
