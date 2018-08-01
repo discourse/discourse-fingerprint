@@ -226,7 +226,7 @@ after_initialize do
       # +user_id+::     User to be queried
       #
       # Returns a list of all fingerprints.
-      def self.getFingerprints(user_id)
+      def self.get_fingerprints(user_id)
         user_key = "user_#{user_id}"
         ignore_key = "ignore_#{user_id}"
 
@@ -249,7 +249,7 @@ after_initialize do
       # This method shall not return more than +SiteSettings.max_fingerprint_conflicts+.
       #
       # Returns a list of conflicts.
-      def self.getConflicts
+      def self.get_conflicts
         conflicts = Store.get('conflicts') || []
 
         Store.get_all(conflicts).values
@@ -277,7 +277,7 @@ after_initialize do
     class FingerprintAdminController < ::Admin::AdminController
 
       def index
-        conflicts = DiscourseFingerprint::Fingerprint.getConflicts
+        conflicts = DiscourseFingerprint::Fingerprint.get_conflicts
 
         users = Set[conflicts.flatten]
         users = Hash[User.where(id: users).map { |x| [x.id, x] }]
@@ -298,7 +298,7 @@ after_initialize do
       # conflicting users having similar fingerprints.
       def report
         user_id = User.where(username: params[:user]).pluck(:id).first
-        fingerprints = DiscourseFingerprint::Fingerprint.getFingerprints(user_id)
+        fingerprints = DiscourseFingerprint::Fingerprint.get_fingerprints(user_id)
 
         # Looking up all conflicting users and augmenting original fingerprint
         # data.
