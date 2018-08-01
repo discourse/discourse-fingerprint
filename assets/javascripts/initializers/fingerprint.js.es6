@@ -4,8 +4,10 @@ import Fingerprint2 from 'discourse/plugins/discourse-fingerprint/lib/fingerprin
 export default {
   name: 'fingerprint',
 
-  initialize() {
-    if (!Discourse.User.current()) {
+  initialize(container) {
+    const siteSettings = container.lookup("site-settings:main");
+    const user = container.lookup('current-user:main');
+    if (!siteSettings.fingerprint_enabled || !user) {
       return;
     }
 

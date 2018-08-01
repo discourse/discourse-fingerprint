@@ -1,5 +1,6 @@
 plugins:
   fingerprint_enabled:
+    client: true
     default: true
   max_fingerprints:
     default: 10
