@@ -1,7 +1,7 @@
 export default Discourse.Route.extend({
-  controllerName: 'fingerprintReport',
+  controllerName: "fingerprintReport",
 
-  renderTemplate: function() {
-    this.render('fingerprintReport');
+  renderTemplate() {
+    this.render("fingerprintReport");
   }
 });

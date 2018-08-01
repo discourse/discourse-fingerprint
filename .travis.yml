@@ -54,4 +54,5 @@ before_script:
 script:
   - bundle exec rubocop --parallel
   - eslint --ext .es6 plugins/$DISCOURSE_PLUGIN/assets/javascripts
+  - find plugins/$DISCOURSE_PLUGIN -name '*.es6' | xargs prettier — --list-different
   - bundle exec rake plugin:spec["$DISCOURSE_PLUGIN"]
