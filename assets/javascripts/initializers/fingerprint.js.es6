@@ -1,5 +1,5 @@
 import { ajax } from 'discourse/lib/ajax';
-import Fingerprint2 from 'discourse/plugins/discourse-fingerprint/lib/fingerprintjs2';
+import loadScript from 'discourse/lib/load-script';
 
 export default {
   name: 'fingerprint',
@@ -11,17 +11,20 @@ export default {
       return;
     }
 
-    // Wait for 3 seconds before fingerprinting user to let the browser use
-    // resources for more important tasks (i.e. resource loading, rendering).
-    setTimeout(() => {
-      var options = { excludeEnumerateDevices: true };
-      new Fingerprint2(options).get(function(result, components) {
-        ajax('/fingerprint', { type: 'POST', data: {
-          type: 'fingerprintjs2',
-          hash: result,
-          data: components,
-        }});
-      });
-    }, 3000);
+    loadScript('/plugins/discourse-fingerprint/javascripts/fingerprintjs2.js').then(() => {
+      // Wait for 3 seconds before fingerprinting user to let the browser use
+      // resources for more important tasks (i.e. resource loading, rendering).
+      setTimeout(() => {
+        var options = { excludeEnumerateDevices: true };
+        /* global Fingerprint2 */
+        new Fingerprint2(options).get(function(result, components) {
+          ajax('/fingerprint', { type: 'POST', data: {
+            type: 'fingerprintjs2',
+            hash: result,
+            data: components,
+          }});
+        });
+      }, 3000);
+    });
   }
 };
