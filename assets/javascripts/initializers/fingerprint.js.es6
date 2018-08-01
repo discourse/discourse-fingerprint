@@ -11,12 +11,12 @@ export default {
       return;
     }
 
-    loadScript(
-      "/plugins/discourse-fingerprint/javascripts/fingerprintjs2.js"
-    ).then(() => {
-      // Wait for 3 seconds before fingerprinting user to let the browser use
-      // resources for more important tasks (i.e. resource loading, rendering).
-      Ember.run.later(() => {
+    // Wait for 3 seconds before fingerprinting user to let the browser use
+    // resources for more important tasks (i.e. resource loading, rendering).
+    Ember.run.later(() => {
+      loadScript(
+        "/plugins/discourse-fingerprint/javascripts/fingerprintjs2.js"
+      ).then(() => {
         const options = { excludeEnumerateDevices: true };
         /* global Fingerprint2 */
         new Fingerprint2(options).get(function(result, components) {
@@ -29,7 +29,7 @@ export default {
             }
           });
         });
-      }, 3000);
-    });
+      });
+    }, 3000);
   }
 };
