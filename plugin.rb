@@ -17,7 +17,36 @@ after_initialize do
   module ::DiscourseFingerprint
     PLUGIN_NAME = 'discourse-fingerprint'
 
-    Store = ::PluginStore.new(PLUGIN_NAME)
+    # Wrapper around +PluginStore+ that offers support for batch operations
+    # such as +get_all+.
+    class Store
+      def self.set(key, value)
+        ::PluginStore.set(PLUGIN_NAME, key, value)
+      end
+
+      def self.get(key)
+        ::PluginStore.get(PLUGIN_NAME, key)
+      end
+
+      def self.remove(key)
+        ::PluginStore.remove(PLUGIN_NAME, key)
+      end
+
+      # Gets all associated values to an array of keys.
+      #
+      # If the key does not exist or the associated value is +nil+ nothing will
+      # be added to returned hash.
+      #
+      # Params:
+      # +keys+::  Array of keys to be queried.
+      #
+      # Returns a hash of keys and associated values.
+      def self.get_all(keys)
+        rows = PluginStoreRow.where('plugin_name = ? AND key IN (?)', PLUGIN_NAME, keys).to_a
+
+        Hash[rows.map { |row| [row.key, ::PluginStore.cast_value(row.type_name, row.value)] }]
+      end
+    end
 
     class Engine < ::Rails::Engine
       engine_name DiscourseFingerprint::PLUGIN_NAME
@@ -205,9 +234,11 @@ after_initialize do
         ignores = Store.get(ignore_key) || []
         ignores << user_id
 
+        hash_keys = fingerprints.map { |f| "hash_#{f[:type]}_#{f[:hash]}" }
+        conflicts = Store.get_all(hash_keys)
         fingerprints.each { |f|
           hash_key = "hash_#{f[:type]}_#{f[:hash]}"
-          f[:conflicts] = (Store.get(hash_key) || []) - ignores
+          f[:conflicts] = (conflicts[hash_key] || []) - ignores
         }
 
         fingerprints
@@ -221,7 +252,7 @@ after_initialize do
       def self.getConflicts
         conflicts = Store.get('conflicts') || []
 
-        conflicts.map { |hash_key| Store.get(hash_key) }
+        Store.get_all(conflicts).values
       end
 
     end
@@ -289,10 +320,9 @@ after_initialize do
       # +user_a+::  First user of the pair
       # +user_b+::  Second user of the pair
       def ignore
-        user_a = User.where(username: params[:user]).pluck(:id).first
-        user_b = User.where(username: params[:other_user]).pluck(:id).first
+        users = User.where(username: [params[:user], params[:other_user]]).pluck(:id)
 
-        DiscourseFingerprint::Fingerprint.ignore(user_a, user_b)
+        DiscourseFingerprint::Fingerprint.ignore(users[0], users[1])
       end
     end
   end
