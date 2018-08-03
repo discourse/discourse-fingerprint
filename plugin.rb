@@ -283,7 +283,7 @@ after_initialize do
         users = Hash[User.where(id: users).map { |x| [x.id, x] }]
 
         conflicts.map! { |conflict|
-          conflict.map! { |x| users[x] }
+          conflict.map! { |x| BasicUserSerializer.new(users[x], root: false) }
         }
 
         render json: { conflicts: conflicts }
@@ -305,12 +305,12 @@ after_initialize do
         conflicts = fingerprints.map { |f| f[:conflicts] }.reduce(Set[], :merge)
         conflicts = Hash[User.where(id: conflicts).map { |x| [x.id, x] }]
         fingerprints.each { |f|
-          f[:conflicts].map! { |x| conflicts[x] }
+          f[:conflicts].map! { |x| BasicUserSerializer.new(conflicts[x], root: false) }
         }
 
         render json: {
           fingerprints: fingerprints,
-          conflicts: conflicts.values,
+          conflicts: serialize_data(conflicts.values, BasicUserSerializer),
         }
       end
 
