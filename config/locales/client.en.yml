@@ -1,17 +1,17 @@
 en:
   js:
     fingerprint:
-      title: 'Fingerprint matcher'
+      title: 'Fingerprint'
+      info: 'User devices will be fingerprinted once per session using {{algorithm}}.'
       details: 'Details'
       none: 'This user has no recorded fingerprints.'
-      conflicts: 'Conflicts for {{user}}'
-      conflicts_latest: 'Latest conflicts'
-      conflicts_found: '{{count}} user has similar fingerprint.'
-      conflicts_not_found: 'No similar signature were found.'
-      other_user: 'Other user'
+      matches: 'Matches for {{username}}'
+      matches_latest: 'Latest matches'
+      matches_found: '{{count}} users have similar fingerprints.'
+      matches_not_found: 'No similar signature were found.'
       results:
         algorithm: 'Algorithm'
         hash_value: 'Hash value'
-        first_seen_at: 'First seen at'
-        last_seen_at: 'Last seen at'
-        in_conflict_with: 'In conflict with'
+        first_seen: 'First seen'
+        last_seen: 'Last seen'
+        matches: 'Mathces'

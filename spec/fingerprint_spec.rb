@@ -76,16 +76,16 @@ describe ::DiscourseFingerprint::Fingerprint do
 
     fingerprints = DiscourseFingerprint::Fingerprint.get_fingerprints(1)
     expect(fingerprints.size).to eq(3)
-    expect(fingerprints[0][:conflicts]).to match_array([2])
-    expect(fingerprints[1][:conflicts]).to match_array([3])
-    expect(fingerprints[2][:conflicts]).to match_array([])
+    expect(fingerprints[0][:matches]).to match_array([2])
+    expect(fingerprints[1][:matches]).to match_array([3])
+    expect(fingerprints[2][:matches]).to match_array([])
 
     fingerprints = DiscourseFingerprint::Fingerprint.get_fingerprints(3)
     expect(fingerprints.size).to eq(1)
-    expect(fingerprints.first[:conflicts]).to match_array([1])
+    expect(fingerprints.first[:matches]).to match_array([1])
 
-    conflicts = DiscourseFingerprint::Fingerprint.get_conflicts
-    expect(conflicts).to match_array([[1, 2], [1, 3]])
+    matches = DiscourseFingerprint::Fingerprint.get_matches
+    expect(matches).to match_array([[1, 2], [1, 3]])
   end
 
   it 'can ignore users' do
@@ -97,9 +97,9 @@ describe ::DiscourseFingerprint::Fingerprint do
     DiscourseFingerprint::Fingerprint.ignore(1, 3)
 
     fingerprints = DiscourseFingerprint::Fingerprint.get_fingerprints(1)
-    expect(fingerprints[1][:conflicts]).to match_array([])
+    expect(fingerprints[1][:matches]).to match_array([])
     fingerprints = DiscourseFingerprint::Fingerprint.get_fingerprints(3)
-    expect(fingerprints.first[:conflicts]).to match_array([])
+    expect(fingerprints.first[:matches]).to match_array([])
   end
 
   it 'can remove ignore' do
@@ -112,9 +112,9 @@ describe ::DiscourseFingerprint::Fingerprint do
     DiscourseFingerprint::Fingerprint.ignore(1, 3, false)
 
     fingerprints = DiscourseFingerprint::Fingerprint.get_fingerprints(1)
-    expect(fingerprints[1][:conflicts]).to match_array([3])
+    expect(fingerprints[1][:matches]).to match_array([3])
     fingerprints = DiscourseFingerprint::Fingerprint.get_fingerprints(3)
-    expect(fingerprints.first[:conflicts]).to match_array([1])
+    expect(fingerprints.first[:matches]).to match_array([1])
   end
 
 end

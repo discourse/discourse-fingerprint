@@ -9,27 +9,25 @@
       </div>
       <div class="section-body">
         {{user-selector single=true
-                        usernames=user
+                        usernames=username
                         onChangeCallback='updateReport'
-                        placeholderKey='user.username.title'}}
+                        placeholderKey='user.username.title'
+                        canReceiveUpdates='true'}}
+        <p>{{{i18n 'fingerprint.info' algorithm='<a href="https://github.com/Valve/fingerprintjs2">Fingeprintjs2</a>'}}}</p>
       </div>
     </div>
 
-    <!-- Right: User's conflicts -->
+    <!-- Right: User's matches -->
     <div class="section-column">
-      {{#if user}}
+      {{#if username}}
         <div class="section-title">
-          <h2>{{i18n 'fingerprint.conflicts' user=user}}</h2>
+          <h2>{{i18n 'fingerprint.matches' username=username}}</h2>
         </div>
         <div class="section-body">
-          {{#if conflicts.length}}
-            <span>{{i18n 'fingerprint.conflicts_found' count=conflicts.length}}</span>
+          {{#if matches.length}}
+            <span>{{i18n 'fingerprint.matches_found' count=matches.length}}</span>
             <table>
-              <tr>
-                <th>{{i18n 'fingerprint.other_user'}}</th>
-                <th></th>
-              </tr>
-              {{#each conflicts as |u|}}
+              {{#each matches as |u|}}
                 <tr>
                   <td>
                     {{#user-link user=u}}
@@ -44,14 +42,14 @@
               {{/each}}
             </table>
           {{else}}
-            {{i18n 'fingerprint.conflicts_not_found'}}
+            {{i18n 'fingerprint.matches_not_found'}}
           {{/if}}
         </div>
       {{/if}}
     </div>
   </div>
 
-  {{#if user}}
+  {{#if username}}
     <!-- Show more details about selected user. -->
     <div class="section">
       <div class="section-title">
@@ -63,9 +61,9 @@
             <tr>
               <th>{{i18n 'fingerprint.results.algorithm'}}</th>
               <th>{{i18n 'fingerprint.results.hash_value'}}</th>
-              <th>{{i18n 'fingerprint.results.first_seen_at'}}</th>
-              <th>{{i18n 'fingerprint.results.last_seen_at'}}</th>
-              <th>{{i18n 'fingerprint.results.in_conflict_with'}}</th>
+              <th>{{i18n 'fingerprint.results.first_seen'}}</th>
+              <th>{{i18n 'fingerprint.results.last_seen'}}</th>
+              <th>{{i18n 'fingerprint.results.matches'}}</th>
             </tr>
             {{#each fingerprints as |f|}}
             <tr>
@@ -75,7 +73,7 @@
               <td>{{format-date f.last_time}}</td>
               <td>
                 <p>
-                  {{#each f.conflicts as |u|}}
+                  {{#each f.matches as |u|}}
                     {{#user-link user=u}}
                       {{avatar u imageSize="small"}}
                       {{u.username}}
@@ -92,25 +90,25 @@
       </div>
     </div>
   {{else}}
-    <!-- Show latest conflicts if no user was selected. -->
+    <!-- Show latest matches if no user was selected. -->
     <div class="section">
       <div class="section-title">
-        <h2>{{i18n 'fingerprint.conflicts_latest'}}</h2>
+        <h2>{{i18n 'fingerprint.matches_latest'}}</h2>
       </div>
       <div class="section-body">
-        {{#if all_conflicts.length}}
-          {{#each all_conflicts as |us|}}
+        {{#if all_matches.length}}
+          {{#each all_matches as |us|}}
             <div class="row">
               {{#each us as |u|}}
-                {{#user-link user=u}}
+                <a href {{action 'viewReportFor' u}}>
                   {{avatar u imageSize="small"}}
                   {{u.username}}
-                {{/user-link}}
+                </a>
               {{/each}}
             </div>
           {{/each}}
         {{else}}
-          {{i18n 'fingerprint.conflicts_not_found'}}
+          {{i18n 'fingerprint.matches_not_found'}}
         {{/if}}
       </div>
     </div>

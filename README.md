@@ -17,7 +17,7 @@ to **Settings** > **Plugins** and selecting **Fingerprint matcher** from the
 left side.
 
 Administrator may check individual users by typing in their name or by looking
-over the latest discovered conflicts.
+over the latest discovered matches.
 
 ## Feedback
 

@@ -53,7 +53,7 @@ after_initialize do
       isolate_namespace DiscourseFingerprint
     end
 
-    # Manages user fingerprints and handles conflicts.
+    # Manages user fingerprints and handles matches.
     #
     # Every fingerprint object is a hash having
     #   +:type+::         Name of the fingerprinting algorithm
@@ -65,21 +65,21 @@ after_initialize do
     #   +:last_time+::    Last time the signature has been seen for the current
     #                     user
     #
-    # Conflicts are array containing user IDs that have the same fingerprint.
+    # Matches are array containing user IDs that have the same fingerprint.
     # Two fingerprints are the same if they have the same type and same hash.
     #
-    # To store fingerprints and conflicts, multiple +PluginStore+ keys are
+    # To store fingerprints and matches, multiple +PluginStore+ keys are
     # used imitating a bidirectional map between users and fingerprints. The
     # following keys are used:
     #
     #   +user_%+::    Used to store arrays of fingerprint objects.
     #                 Key is parametrized by user ID.
     #
-    #   +hash_%_%+::  Used to store conflicts for a specific fingerprint.
+    #   +hash_%_%+::  Used to store matches for a specific fingerprint.
     #                 Key is parametrized by type and hash value.
     #
-    #   +conflict+::  Used to store latest +hash_%_%+ keys that are associated
-    #                 with conflicts involving more than 1 user.
+    #   +match+::  Used to store latest +hash_%_%+ keys that are associated
+    #                 with matches involving more than 1 user.
     class Fingerprint
 
       # Adds a new fingerprint to +user_id+.
@@ -131,12 +131,12 @@ after_initialize do
         users << user_id
         Store.set(hash_key, users)
 
-        # Saving if conflicts.
+        # Saving if matches.
         if users.size > 1
-          conflicts = Store.get('conflicts') || []
-          if !conflicts.include?(hash_key)
-            conflicts << hash_key
-            Store.set('conflicts', conflicts.last(SiteSetting.max_fingerprint_conflicts))
+          matches = Store.get('matches') || []
+          if !matches.include?(hash_key)
+            matches << hash_key
+            Store.set('matches', matches.last(SiteSetting.max_fingerprint_matches))
           end
         end
 
@@ -170,24 +170,24 @@ after_initialize do
           Store.remove(hash_key)
         end
 
-        # Remove conflict if there are not at least 2 fingerprints remaining.
+        # Remove match if there are not at least 2 fingerprints remaining.
         if users.size < 2
-          conflicts = Store.get('conflicts') || []
-          if conflicts.include?(hash_key)
-            conflicts.delete(hash_key)
-            Store.set('conflicts', conflicts)
+          matches = Store.get('matches') || []
+          if matches.include?(hash_key)
+            matches.delete(hash_key)
+            Store.set('matches', matches)
           end
         end
 
         nil
       end
 
-      # Ignores all conflicts of +user_id_a+ with +user_id_b+.
+      # Ignores all matches of +user_a+ with +user_b+.
       #
       # Params:
       # +user_a+::  First user of the pair
       # +user_b+::  Second user of the pair
-      # +add+::     Whether this is adds or removes a ignore entry
+      # +add+::     Whether this adds or removes an ignore entry
       def self.ignore(user_a, user_b, add = true)
         ignore_key_a = "ignore_#{user_a}"
         ignore_key_b = "ignore_#{user_b}"
@@ -220,7 +220,7 @@ after_initialize do
 
       # Gets all fingerprints of +user_id+.
       #
-      # Each fingerprint object is augmented with an array of conflicts.
+      # Each fingerprint object is augmented with an array of matches.
       #
       # Params:
       # +user_id+::     User to be queried
@@ -235,24 +235,24 @@ after_initialize do
         ignores << user_id
 
         hash_keys = fingerprints.map { |f| "hash_#{f[:type]}_#{f[:hash]}" }
-        conflicts = Store.get_all(hash_keys)
+        matches = Store.get_all(hash_keys)
         fingerprints.each { |f|
           hash_key = "hash_#{f[:type]}_#{f[:hash]}"
-          f[:conflicts] = (conflicts[hash_key] || []) - ignores
+          f[:matches] = (matches[hash_key] || []) - ignores
         }
 
         fingerprints
       end
 
-      # Gets latest conflicts.
+      # Gets latest matches.
       #
-      # This method shall not return more than +SiteSettings.max_fingerprint_conflicts+.
+      # This method shall not return more than +SiteSettings.max_fingerprint_matches+.
       #
-      # Returns a list of conflicts.
-      def self.get_conflicts
-        conflicts = Store.get('conflicts') || []
+      # Returns a list of matches.
+      def self.get_matches
+        matches = Store.get('matches') || []
 
-        Store.get_all(conflicts).values
+        Store.get_all(matches).values
       end
 
     end
@@ -277,50 +277,50 @@ after_initialize do
     class FingerprintAdminController < ::Admin::AdminController
 
       def index
-        conflicts = DiscourseFingerprint::Fingerprint.get_conflicts
+        matches = DiscourseFingerprint::Fingerprint.get_matches
 
-        users = Set[conflicts.flatten]
+        users = Set[matches.flatten]
         users = Hash[User.where(id: users).map { |x| [x.id, x] }]
 
-        conflicts.map! { |conflict|
-          conflict.map! { |x| BasicUserSerializer.new(users[x], root: false) }
+        matches.map! { |match|
+          match.map! { |x| BasicUserSerializer.new(users[x], root: false) }
         }
 
-        render json: { conflicts: conflicts }
+        render json: { matches: matches }
       end
 
       # Generates a report.
       #
       # Params:
-      # +user+::  Name of the user for which the request has been made
+      # +username+::  Name of the user for which the request has been made
       #
       # Returns a hash containing all user fingerprints and a list of
-      # conflicting users having similar fingerprints.
+      # matching users having similar fingerprints.
       def report
-        user_id = User.where(username: params[:user]).pluck(:id).first
+        user_id = User.where(username: params[:username]).pluck(:id).first
         fingerprints = DiscourseFingerprint::Fingerprint.get_fingerprints(user_id)
 
-        # Looking up all conflicting users and augmenting original fingerprint
+        # Looking up all matching users and augmenting original fingerprint
         # data.
-        conflicts = fingerprints.map { |f| f[:conflicts] }.reduce(Set[], :merge)
-        conflicts = Hash[User.where(id: conflicts).map { |x| [x.id, x] }]
+        matches = fingerprints.map { |f| f[:matches] }.reduce(Set[], :merge)
+        matches = Hash[User.where(id: matches).map { |x| [x.id, x] }]
         fingerprints.each { |f|
-          f[:conflicts].map! { |x| BasicUserSerializer.new(conflicts[x], root: false) }
+          f[:matches].map! { |x| BasicUserSerializer.new(matches[x], root: false) }
         }
 
         render json: {
           fingerprints: fingerprints,
-          conflicts: serialize_data(conflicts.values, BasicUserSerializer),
+          matches: serialize_data(matches.values, BasicUserSerializer),
         }
       end
 
       # Adds a new pair of ignored users.
       #
       # Params:
-      # +user_a+::  First user of the pair
-      # +user_b+::  Second user of the pair
+      # +username+::        Name of the first user of the pair
+      # +other_username+::  Name of the second user of the pair
       def ignore
-        users = User.where(username: [params[:user], params[:other_user]]).pluck(:id)
+        users = User.where(username: [params[:username], params[:other_username]]).pluck(:id)
 
         DiscourseFingerprint::Fingerprint.ignore(users[0], users[1])
       end

@@ -4,5 +4,5 @@ plugins:
     default: true
   max_fingerprints:
     default: 10
-  max_fingerprint_conflicts:
+  max_fingerprint_matches:
     default: 50

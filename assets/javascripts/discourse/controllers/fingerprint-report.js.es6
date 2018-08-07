@@ -1,12 +1,12 @@
 import { ajax } from "discourse/lib/ajax";
 
 export default Ember.Controller.extend({
-  user: "",
+  username: "",
 
-  all_conflicts: [],
+  all_matches: [],
 
   fingerprints: [],
-  conflicts: [],
+  matches: [],
 
   init() {
     this._super(...arguments);
@@ -14,33 +14,37 @@ export default Ember.Controller.extend({
     ajax("/admin/plugins/fingerprint", {
       type: "GET"
     }).then(response => {
-      this.set("all_conflicts", response.conflicts);
+      this.set("all_matches", response.matches);
     });
   },
 
   actions: {
+    viewReportFor(user) {
+      this.set("username", user.username);
+    },
+
     updateReport() {
-      const user = this.get("user");
-      if (!user) {
+      const username = this.get("username");
+      if (!username) {
         return;
       }
 
       ajax("/admin/plugins/fingerprint/report", {
         type: "GET",
-        data: { user }
+        data: { username }
       }).then(response => {
         this.setProperties({
-          conflicts: response.conflicts,
+          matches: response.matches,
           fingerprints: response.fingerprints
         });
       });
     },
 
-    addIgnore(other_user) {
-      const user = this.get("user");
+    addIgnore(other_username) {
+      const username = this.get("username");
       ajax("/admin/plugins/fingerprint/ignore", {
         type: "POST",
-        data: { user, other_user }
+        data: { username, other_username }
       }).andThen(() => this.send("updateReport"));
     }
   }
