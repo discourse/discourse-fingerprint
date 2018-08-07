@@ -58,6 +58,10 @@ describe ::DiscourseFingerprint::Fingerprint do
 
   it 'removes an existing fingerprint' do
     DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash', 'fp_data_1')
+
+    fingerprints = DiscourseFingerprint::Fingerprint.get_fingerprints(1)
+    expect(fingerprints.size).to eq(1)
+
     DiscourseFingerprint::Fingerprint.remove(1,
       type: 'fp_type',
       hash: 'fp_hash',
