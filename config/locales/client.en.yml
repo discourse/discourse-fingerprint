@@ -7,11 +7,13 @@ en:
       none: 'This user has no recorded fingerprints.'
       matches: 'Matches for {{username}}'
       matches_latest: 'Latest matches'
-      matches_found: '{{count}} users have similar fingerprints.'
+      matches_found:
+        one: '{{count}} user has matching fingerprints.'
+        other: '{{count}} users have matching fingerprints.'
       matches_not_found: 'No similar signature were found.'
       results:
         algorithm: 'Algorithm'
         hash_value: 'Hash value'
         first_seen: 'First seen'
         last_seen: 'Last seen'
-        matches: 'Mathces'
+        matches: 'Matches'
