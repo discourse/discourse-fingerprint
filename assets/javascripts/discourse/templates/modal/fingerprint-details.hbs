@@ -1,0 +1,14 @@
+{{#d-modal-body title="fingerprint.details"}}
+  <table>
+    {{#each-in fingerprint.data as |idx data|}}
+      <tr>
+        <td>{{data.key}}</td>
+        <td>{{data.value}}</td>
+      </tr>
+    {{/each-in}}
+  </table>
+{{/d-modal-body}}
+
+<div class="modal-footer">
+  {{d-modal-cancel close=(action "closeModal")}}
+</div>

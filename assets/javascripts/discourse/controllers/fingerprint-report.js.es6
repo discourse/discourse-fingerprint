@@ -1,5 +1,6 @@
 import { ajax } from "discourse/lib/ajax";
 import computed from "ember-addons/ember-computed-decorators";
+import showModal from "discourse/lib/show-modal";
 
 export default Ember.Controller.extend({
   username: "",
@@ -28,6 +29,10 @@ export default Ember.Controller.extend({
   actions: {
     viewReportFor(user) {
       this.set("username", user.username);
+    },
+
+    showFingerprintDetails(fingerprint) {
+      showModal("fingerprint-details").setProperties({ fingerprint });
     },
 
     updateReport() {

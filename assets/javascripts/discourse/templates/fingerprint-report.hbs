@@ -70,6 +70,7 @@
               <th>{{i18n 'fingerprint.results.first_seen'}}</th>
               <th>{{i18n 'fingerprint.results.last_seen'}}</th>
               <th>{{i18n 'fingerprint.results.matches'}}</th>
+              <th></th>
             </tr>
             {{#each fingerprints as |f|}}
             <tr>
@@ -86,6 +87,11 @@
                     {{/user-link}}
                   {{/each}}
                 </p>
+              </td>
+              <td>
+                <a href {{action 'showFingerprintDetails' f}}>
+                  {{d-icon "info"}}
+                </a>
               </td>
             </tr>
             {{/each}}
