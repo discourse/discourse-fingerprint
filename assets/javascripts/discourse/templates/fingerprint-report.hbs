@@ -19,9 +19,15 @@
 
     <!-- Right: User's matches -->
     <div class="section-column">
-      {{#if username}}
+      {{#if showReport}}
         <div class="section-title">
-          <h2>{{i18n 'fingerprint.matches' username=username}}</h2>
+          <h2>
+            {{i18n 'fingerprint.matches_for'}}
+            {{#user-link user=user}}
+              {{avatar user imageSize="medium"}}
+              {{user.username}}
+            {{/user-link}}
+          </h2>
         </div>
         <div class="section-body">
           {{#if matches.length}}
@@ -49,7 +55,7 @@
     </div>
   </div>
 
-  {{#if username}}
+  {{#if showReport}}
     <!-- Show more details about selected user. -->
     <div class="section">
       <div class="section-title">

@@ -297,8 +297,8 @@ after_initialize do
       # Returns a hash containing all user fingerprints and a list of
       # matching users having similar fingerprints.
       def report
-        user_id = User.where(username: params[:username]).pluck(:id).first
-        fingerprints = DiscourseFingerprint::Fingerprint.get_fingerprints(user_id)
+        user = User.where(username: params[:username]).first
+        fingerprints = DiscourseFingerprint::Fingerprint.get_fingerprints(user.id)
 
         # Looking up all matching users and augmenting original fingerprint
         # data.
@@ -309,6 +309,7 @@ after_initialize do
         }
 
         render json: {
+          user: BasicUserSerializer.new(user, root: false),
           fingerprints: fingerprints,
           matches: serialize_data(matches.values, BasicUserSerializer),
         }

@@ -5,7 +5,7 @@ en:
       info: 'User devices will be fingerprinted once per session using {{algorithm}}.'
       details: 'Details'
       none: 'This user has no recorded fingerprints.'
-      matches: 'Matches for {{username}}'
+      matches_for: 'Matches for'
       matches_latest: 'Latest matches'
       matches_found:
         one: '{{count}} user has matching fingerprints.'

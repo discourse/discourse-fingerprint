@@ -1,12 +1,19 @@
 import { ajax } from "discourse/lib/ajax";
+import computed from "ember-addons/ember-computed-decorators";
 
 export default Ember.Controller.extend({
   username: "",
 
   all_matches: [],
 
+  user: null,
   fingerprints: [],
   matches: [],
+
+  @computed("user", "username")
+  showReport(user, username) {
+    return user && username;
+  },
 
   init() {
     this._super(...arguments);
@@ -34,6 +41,7 @@ export default Ember.Controller.extend({
         data: { username }
       }).then(response => {
         this.setProperties({
+          user: response.user,
           matches: response.matches,
           fingerprints: response.fingerprints
         });
