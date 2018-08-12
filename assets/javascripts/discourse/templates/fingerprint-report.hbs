@@ -97,16 +97,20 @@
       </div>
       <div class="section-body">
         {{#if all_matches.length}}
+          <table>
           {{#each all_matches as |us|}}
-            <div class="row">
+            <tr>
               {{#each us as |u|}}
-                <a href {{action 'viewReportFor' u}}>
-                  {{avatar u imageSize="small"}}
-                  {{u.username}}
-                </a>
+                <td>
+                  <a href {{action 'viewReportFor' u}}>
+                    {{avatar u imageSize="small"}}
+                    {{u.username}}
+                  </a>
+                </td>
               {{/each}}
-            </div>
+            </tr>
           {{/each}}
+          </table>
         {{else}}
           {{i18n 'fingerprint.matches_not_found'}}
         {{/if}}
