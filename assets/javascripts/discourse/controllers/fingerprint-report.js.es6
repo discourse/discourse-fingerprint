@@ -32,7 +32,10 @@ export default Ember.Controller.extend({
     },
 
     showFingerprintDetails(fingerprint) {
-      showModal("fingerprint-details").setProperties({ fingerprint });
+      showModal("fingerprint-details").setProperties({
+        fingerprint,
+        isFingerprintjs2: fingerprint.type === "fingerprintjs2"
+      });
     },
 
     updateReport() {

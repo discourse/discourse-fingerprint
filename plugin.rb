@@ -16,6 +16,7 @@ after_initialize do
 
   module ::DiscourseFingerprint
     PLUGIN_NAME = 'discourse-fingerprint'
+    FINGERPRINTED_HEADERS = ['Accept', 'Accept-Charset', 'Accept-Datetime', 'Accept-Encoding', 'Accept-Language', 'User-Agent']
 
     # Wrapper around +PluginStore+ that offers support for batch operations
     # such as +get_all+.
@@ -263,11 +264,28 @@ after_initialize do
       skip_before_action :check_xhr
 
       def index
-        user_id = current_user.id
-        type    = params.require(:type)
-        hash    = params.require(:hash)
-        data    = params.require(:data)
+        user_id  = current_user.id
+        type     = params.require(:type)
+        hash     = params.require(:hash)
+        raw_data = params.fetch(:data, {})
 
+        data = {}
+        data["#{type}_hash"] = hash
+
+        # Normalize fingerprintjs2's data into a flat hash.
+        if type == 'fingerprintjs2'
+          raw_data.each { |_, d| data[d['key']] = d['value'] }
+        end
+
+        # Using request headers to enhance the previous fingerprint.
+        FINGERPRINTED_HEADERS.each { |h| data[h] = request.headers[h] }
+
+        # Updating fingerprint type name (the plus means that the request
+        # headers were added and hash recomputed).
+        type << "+"
+
+        # Recompute new fingerprint.
+        hash = Digest::SHA1::hexdigest(data.values.map(&:to_s).sort.to_s)
         DiscourseFingerprint::Fingerprint.add(user_id, type, hash, data)
       end
     end
