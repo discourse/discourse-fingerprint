@@ -65,6 +65,7 @@
         {{#if fingerprints.length}}
           <table>
             <tr>
+              <th></th>
               <th>{{i18n 'fingerprint.results.algorithm'}}</th>
               <th>{{i18n 'fingerprint.results.hash_value'}}</th>
               <th>{{i18n 'fingerprint.results.first_seen'}}</th>
@@ -74,6 +75,7 @@
             </tr>
             {{#each fingerprints as |f|}}
             <tr>
+              <td>{{d-icon f.device_type}}</td>
               <td>{{f.type}}</td>
               <td>{{f.hash}}</td>
               <td>{{format-date f.first_time}}</td>

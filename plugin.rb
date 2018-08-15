@@ -13,6 +13,7 @@ after_initialize do
   require_dependency 'admin/admin_controller'
   require_dependency 'application_controller'
   require_dependency 'plugin_store'
+  require_dependency 'mobile_detection'
 
   module ::DiscourseFingerprint
     PLUGIN_NAME = 'discourse-fingerprint'
@@ -240,6 +241,11 @@ after_initialize do
         fingerprints.each { |f|
           hash_key = "hash_#{f[:type]}_#{f[:hash]}"
           f[:matches] = (matches[hash_key] || []) - ignores
+          if f[:data].key?('User-Agent') || f[:data].key?('user_agent')
+            f[:device_type] = MobileDetection.mobile_device?(f[:data]['User-Agent'] || f[:data]['user_agent']) ? 'mobile' : 'desktop'
+          elsif f[:data].key?('0')
+            f[:device_type] = MobileDetection.mobile_device?(f[:data]['0']['value']) ? 'mobile' : 'desktop'
+          end
         }
 
         fingerprints
