@@ -11,13 +11,13 @@ describe ::DiscourseFingerprint::Fingerprint do
     now = Time.now
 
     freeze_time(now)
-    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash', 'fp_data')
+    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash', key: 'value')
 
     fingerprints = DiscourseFingerprint::Fingerprint.get_fingerprints(1)
     expect(fingerprints.size).to eq(1)
     expect(fingerprints.first[:type]).to eq('fp_type')
     expect(fingerprints.first[:hash]).to eq('fp_hash')
-    expect(fingerprints.first[:data]).to eq('fp_data')
+    expect(fingerprints.first[:data]).to eq({ key: 'value' }.stringify_keys)
     expect(fingerprints.first[:first_time]).to eq(now.to_s)
     expect(fingerprints.first[:last_time]).to eq(now.to_s)
   end
@@ -26,14 +26,14 @@ describe ::DiscourseFingerprint::Fingerprint do
     now = Time.now
 
     freeze_time(now - 10.minutes)
-    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash', 'fp_data_1')
+    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash', key: 'fp_data_1')
 
     freeze_time(now)
-    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash', 'fp_data_2')
+    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash', key: 'fp_data_2')
 
     fingerprints = DiscourseFingerprint::Fingerprint.get_fingerprints(1)
     expect(fingerprints.size).to eq(1)
-    expect(fingerprints.first[:data]).to eq('fp_data_2')
+    expect(fingerprints.first[:data]).to eq({ key: 'fp_data_2' }.stringify_keys)
     expect(fingerprints.first[:first_time]).to eq((now - 10.minutes).to_s)
     expect(fingerprints.first[:last_time]).to eq(now.to_s)
   end
@@ -46,18 +46,18 @@ describe ::DiscourseFingerprint::Fingerprint do
     # +SiteSetting.max_fingerprints+ to be returned.
     1.upto(2 * SiteSetting.max_fingerprints) do |i|
       freeze_time(now + i.minutes)
-      DiscourseFingerprint::Fingerprint.add(1, 'fp_type', "fp_hash_#{i}", i)
+      DiscourseFingerprint::Fingerprint.add(1, 'fp_type', "fp_hash_#{i}", id: i)
     end
 
     fingerprints = DiscourseFingerprint::Fingerprint.get_fingerprints(1)
     expect(fingerprints.size).to eq(SiteSetting.max_fingerprints)
     fingerprints.each { |f|
-      expect(f[:data].to_i).to be >= SiteSetting.max_fingerprints
+      expect(f[:data][:id].to_i).to be >= SiteSetting.max_fingerprints
     }
   end
 
   it 'removes an existing fingerprint' do
-    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash', 'fp_data_1')
+    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash', key: 'fp_data_1')
 
     fingerprints = DiscourseFingerprint::Fingerprint.get_fingerprints(1)
     expect(fingerprints.size).to eq(1)
@@ -72,11 +72,11 @@ describe ::DiscourseFingerprint::Fingerprint do
   end
 
   it 'loads all fingerprints' do
-    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_1', 'fp_data')
-    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_2', 'fp_data')
-    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_3', 'fp_data')
-    DiscourseFingerprint::Fingerprint.add(2, 'fp_type', 'fp_hash_1', 'fp_data')
-    DiscourseFingerprint::Fingerprint.add(3, 'fp_type', 'fp_hash_2', 'fp_data')
+    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_1', key: 'value')
+    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_2', key: 'value')
+    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_3', key: 'value')
+    DiscourseFingerprint::Fingerprint.add(2, 'fp_type', 'fp_hash_1', key: 'value')
+    DiscourseFingerprint::Fingerprint.add(3, 'fp_type', 'fp_hash_2', key: 'value')
 
     fingerprints = DiscourseFingerprint::Fingerprint.get_fingerprints(1)
     expect(fingerprints.size).to eq(3)
@@ -93,11 +93,11 @@ describe ::DiscourseFingerprint::Fingerprint do
   end
 
   it 'can ignore users' do
-    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_1', 'fp_data')
-    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_2', 'fp_data')
-    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_3', 'fp_data')
-    DiscourseFingerprint::Fingerprint.add(2, 'fp_type', 'fp_hash_1', 'fp_data')
-    DiscourseFingerprint::Fingerprint.add(3, 'fp_type', 'fp_hash_2', 'fp_data')
+    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_1', key: 'value')
+    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_2', key: 'value')
+    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_3', key: 'value')
+    DiscourseFingerprint::Fingerprint.add(2, 'fp_type', 'fp_hash_1', key: 'value')
+    DiscourseFingerprint::Fingerprint.add(3, 'fp_type', 'fp_hash_2', key: 'value')
     DiscourseFingerprint::Fingerprint.ignore(1, 3)
 
     fingerprints = DiscourseFingerprint::Fingerprint.get_fingerprints(1)
@@ -107,11 +107,11 @@ describe ::DiscourseFingerprint::Fingerprint do
   end
 
   it 'can remove ignore' do
-    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_1', 'fp_data')
-    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_2', 'fp_data')
-    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_3', 'fp_data')
-    DiscourseFingerprint::Fingerprint.add(2, 'fp_type', 'fp_hash_1', 'fp_data')
-    DiscourseFingerprint::Fingerprint.add(3, 'fp_type', 'fp_hash_2', 'fp_data')
+    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_1', key: 'value')
+    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_2', key: 'value')
+    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_3', key: 'value')
+    DiscourseFingerprint::Fingerprint.add(2, 'fp_type', 'fp_hash_1', key: 'value')
+    DiscourseFingerprint::Fingerprint.add(3, 'fp_type', 'fp_hash_2', key: 'value')
     DiscourseFingerprint::Fingerprint.ignore(1, 3)
     DiscourseFingerprint::Fingerprint.ignore(1, 3, false)
 
