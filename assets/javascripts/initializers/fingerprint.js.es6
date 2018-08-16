@@ -31,5 +31,24 @@ export default {
         });
       });
     }, 3000);
+
+    // Wait for 5 seconds before fingerprinting user to let the browser use
+    // resources for more important tasks (i.e. resource loading, rendering).
+    Ember.run.later(() => {
+      loadScript(
+        "/plugins/discourse-fingerprint/javascripts/client.min.js"
+      ).then(() => {
+        /* global ClientJS */
+        var client = new ClientJS();
+        ajax("/fingerprint", {
+          type: "POST",
+          data: {
+            type: "clientjs",
+            hash: client.getFingerprint(),
+            data: {}
+          }
+        });
+      });
+    }, 5000);
   }
 };
