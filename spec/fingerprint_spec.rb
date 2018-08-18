@@ -5,6 +5,7 @@ describe ::DiscourseFingerprint::Fingerprint do
   before do
     SiteSetting.fingerprint_enabled = true
     SiteSetting.max_fingerprints = 10
+    SiteSetting.min_fingerprints_for_match = 1
   end
 
   it 'saves a new fingerprint' do
@@ -119,6 +120,33 @@ describe ::DiscourseFingerprint::Fingerprint do
     expect(fingerprints[1][:matches]).to match_array([3])
     fingerprints = DiscourseFingerprint::Fingerprint.get_fingerprints(3)
     expect(fingerprints.first[:matches]).to match_array([1])
+  end
+
+  it 'needs at least 3 fingerprints to match' do
+    SiteSetting.min_fingerprints_for_match = 3
+
+    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_1', key: 'value')
+    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_2', key: 'value')
+    DiscourseFingerprint::Fingerprint.add(2, 'fp_type', 'fp_hash_1', key: 'value')
+
+    matches = DiscourseFingerprint::Fingerprint.get_matches
+    expect(matches).to match_array([])
+
+    DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash_3', key: 'value')
+    DiscourseFingerprint::Fingerprint.add(2, 'fp_type', 'fp_hash_2', key: 'value')
+    matches = DiscourseFingerprint::Fingerprint.get_matches
+    expect(matches).to match_array([])
+
+    DiscourseFingerprint::Fingerprint.add(2, 'fp_type', 'fp_hash_3', key: 'value')
+    matches = DiscourseFingerprint::Fingerprint.get_matches
+    expect(matches).to match_array([[1, 2]])
+  end
+
+  it 'handles backwards incompatibility' do
+    DiscourseFingerprint::Store.set('matches', ['fp_hash_1', 'fp_hash_2', [1, 2]])
+
+    matches = DiscourseFingerprint::Fingerprint.get_matches
+    expect(matches).to match_array([[1, 2]])
   end
 
 end

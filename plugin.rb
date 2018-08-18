@@ -120,27 +120,30 @@ after_initialize do
         end
 
         # Assigning the new fingerprint to the user.
-        Store.set(user_key, fingerprints << {
+        fingerprints << {
           type:       type,
           hash:       hash,
           data:       data,
           first_time: Time.now.to_s,
           last_time:  Time.now.to_s,
-        })
+        }
+        Store.set(user_key, fingerprints)
 
         # Assigning the user to the new fingerprint.
         users = Store.get(hash_key) || []
         users << user_id
         Store.set(hash_key, users)
 
-        # Saving if matches.
-        if users.size > 1
-          matches = Store.get('matches') || []
-          if !matches.include?(hash_key)
-            matches << hash_key
-            Store.set('matches', matches.last(SiteSetting.max_fingerprint_matches))
+        # Checking user for matches.
+        matches = get_matches
+        matches_updated = false
+        get_user_matches(user_id, fingerprints).each do |other_user_id|
+          if !matches.include?([user_id, other_user_id]) && !matches.include?([other_user_id, user_id])
+            matches << [other_user_id, user_id]
+            matches_updated = true
           end
         end
+        Store.set('matches', matches.last(SiteSetting.max_fingerprint_matches)) if matches_updated
 
         nil
       end
@@ -170,15 +173,6 @@ after_initialize do
           Store.set(hash_key, users)
         else
           Store.remove(hash_key)
-        end
-
-        # Remove match if there are not at least 2 fingerprints remaining.
-        if users.size < 2
-          matches = Store.get('matches') || []
-          if matches.include?(hash_key)
-            matches.delete(hash_key)
-            Store.set('matches', matches)
-          end
         end
 
         nil
@@ -237,10 +231,10 @@ after_initialize do
         ignores << user_id
 
         hash_keys = fingerprints.map { |f| "hash_#{f[:type]}_#{f[:hash]}" }
-        matches = Store.get_all(hash_keys)
+        other_user_ids = Store.get_all(hash_keys)
         fingerprints.each { |f|
           hash_key = "hash_#{f[:type]}_#{f[:hash]}"
-          f[:matches] = (matches[hash_key] || []) - ignores
+          f[:matches] = (other_user_ids[hash_key] || []) - ignores
           if f[:data].key?('User-Agent') || f[:data].key?('user_agent')
             f[:device_type] = MobileDetection.mobile_device?(f[:data]['User-Agent'] || f[:data]['user_agent']) ? 'mobile' : 'desktop'
           elsif f[:data].key?('0')
@@ -259,7 +253,36 @@ after_initialize do
       def self.get_matches
         matches = Store.get('matches') || []
 
-        Store.get_all(matches).values
+        # TODO: Remove this in the future. It is used to remove old matches
+        # that would otherwise cause issues.
+        matches.reject! { |x| x.instance_of? String }
+
+        matches
+      end
+
+      # Computes matches for a specific user having a set of fingerprints.
+      #
+      # A match is generated if at least +SiteSetting.min_fingerprints_for_match+
+      # are the same.
+      #
+      # Params:
+      # +user_id+::       User's ID
+      # +fingerprints+::  User's fingerprints
+      #
+      # Returns a list of matching user IDs.
+      def self.get_user_matches(user_id, fingerprints)
+        hash_keys = fingerprints.map { |f| "hash_#{f[:type]}_#{f[:hash]}" }
+        other_user_ids = Store.get_all(hash_keys)
+
+        # Hash storing number of matches between +user_id+ and each user of
+        # +other_user_ids+.
+        num_matches = Hash.new(0)
+        other_user_ids.each { |key, value|
+          value.each { |other_user_id| num_matches[other_user_id] += 1 }
+        }
+
+        # Returning only user IDs that match criteria.
+        num_matches.select { |k, v| k != user_id && v >= SiteSetting.min_fingerprints_for_match }.keys
       end
 
     end
@@ -303,8 +326,7 @@ after_initialize do
       def index
         matches = DiscourseFingerprint::Fingerprint.get_matches
 
-        users = Set[matches.flatten]
-        users = Hash[User.where(id: users).map { |x| [x.id, x] }]
+        users = Hash[User.where(id: Set[matches.flatten]).map { |x| [x.id, x] }]
 
         matches.map! { |match|
           match.map! { |x| BasicUserSerializer.new(users[x], root: false) }

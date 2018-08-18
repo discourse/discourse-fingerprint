@@ -6,3 +6,5 @@ plugins:
     default: 10
   max_fingerprint_matches:
     default: 50
+  min_fingerprints_for_match:
+    default: 2

@@ -1,3 +1,4 @@
 en:
   site_settings:
     fingerprint_enabled: "Enable device fingerprinting and matching per user to identify duplicate users."
+    min_fingerprints_for_match: "Minimum number of fingerprints required to report a match."
