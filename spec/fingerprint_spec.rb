@@ -9,7 +9,7 @@ describe ::DiscourseFingerprint::Fingerprint do
   end
 
   it 'saves a new fingerprint' do
-    now = Time.now
+    now = Time.zone.now
 
     freeze_time(now)
     DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash', key: 'value')
@@ -24,7 +24,7 @@ describe ::DiscourseFingerprint::Fingerprint do
   end
 
   it 'saves by updating old fingerprints' do
-    now = Time.now
+    now = Time.zone.now
 
     freeze_time(now - 10.minutes)
     DiscourseFingerprint::Fingerprint.add(1, 'fp_type', 'fp_hash', key: 'fp_data_1')
@@ -40,7 +40,7 @@ describe ::DiscourseFingerprint::Fingerprint do
   end
 
   it 'saves latest SiteSettings.max_fingerprints fingerprints' do
-    now = Time.now
+    now = Time.zone.now
 
     # Create fingerprints for time +now + 0+, +now + 1+, +now + 2+, ... up to
     # +now + 2 * SiteSetting.max_fingerprints+. Expect only last

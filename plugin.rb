@@ -106,7 +106,7 @@ after_initialize do
         idx = fingerprints.find_index { |f| f[:type] == type && f[:hash] == hash }
         if idx
           fingerprints[idx][:data] = data
-          fingerprints[idx][:last_time] = Time.now.to_s
+          fingerprints[idx][:last_time] = Time.zone.now.to_s
           Store.set(user_key, fingerprints)
           return nil
         end
@@ -124,8 +124,8 @@ after_initialize do
           type:       type,
           hash:       hash,
           data:       data,
-          first_time: Time.now.to_s,
-          last_time:  Time.now.to_s,
+          first_time: Time.zone.now.to_s,
+          last_time:  Time.zone.now.to_s,
         }
         Store.set(user_key, fingerprints)
 
@@ -293,29 +293,19 @@ after_initialize do
       skip_before_action :check_xhr
 
       def index
-        user_id  = current_user.id
-        type     = params.require(:type)
-        hash     = params.require(:hash)
-        raw_data = params.fetch(:data, {})
+        user_id = current_user.id
+        type    = params.require(:type)
+        hash    = params.fetch(:hash, nil)
+        data    = params.fetch(:data, {})
 
-        data = {}
+        # Saving original hash value.
         data["#{type}_hash"] = hash
 
-        # Normalize fingerprintjs2's data into a flat hash.
-        if type == 'fingerprintjs2'
-          raw_data.each { |_, d| data[d['key']] = d['value'] }
-        end
-
-        # Using request headers to enhance the previous fingerprint.
+        # Adding request headers to fingerprint data for a better accuracy.
+        # This requires recomputing the fingerprint hash.
         FINGERPRINTED_HEADERS.each { |h| data[h] = request.headers[h] }
-
-        # Updating fingerprint type name (the plus means that the request
-        # headers were added and hash recomputed).
-        type << "+"
-
-        # Recompute new fingerprint.
         hash = Digest::SHA1::hexdigest(data.values.map(&:to_s).sort.to_s)
-        DiscourseFingerprint::Fingerprint.add(user_id, type, hash, data)
+        DiscourseFingerprint::Fingerprint.add(user_id, "#{type}+", hash, data)
       end
     end
 

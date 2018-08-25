@@ -20,12 +20,18 @@ export default {
         const options = { excludeEnumerateDevices: true };
         /* global Fingerprint2 */
         new Fingerprint2(options).get(function(result, components) {
+          // Converting components array to a map.
+          let componentsMap = {};
+          components.forEach(e => {
+            componentsMap[e.key] = e.value;
+          });
+
           ajax("/fingerprint", {
             type: "POST",
             data: {
               type: "fingerprintjs2",
               hash: result,
-              data: components
+              data: componentsMap
             }
           });
         });
