@@ -306,6 +306,15 @@ after_initialize do
         FINGERPRINTED_HEADERS.each { |h| data[h] = request.headers[h] }
         hash = Digest::SHA1::hexdigest(data.values.map(&:to_s).sort.to_s)
         DiscourseFingerprint::Fingerprint.add(user_id, "#{type}+", hash, data)
+
+        # Compute Fingerprintjs2 hash without audio & canvas fingerprinting.
+        # There are browser extensions that can block these fingerprinting
+        # methods.
+        if type == 'fingerprintjs2'
+          new_data = data.reject { |k, _| ["#{type}_hash", 'audio_fp', 'canvas'].include?(k) }
+          new_hash = Digest::SHA1::hexdigest(new_data.values.map(&:to_s).sort.to_s)
+          DiscourseFingerprint::Fingerprint.add(user_id, "#{type}-simple", new_hash, new_data)
+        end
       end
     end
 
