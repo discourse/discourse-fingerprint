@@ -121,11 +121,11 @@ after_initialize do
 
         # Assigning the new fingerprint to the user.
         fingerprints << {
-          type:       type,
-          hash:       hash,
-          data:       data,
+          type: type,
+          hash: hash,
+          data: data,
           first_time: Time.zone.now.to_s,
-          last_time:  Time.zone.now.to_s,
+          last_time: Time.zone.now.to_s,
         }
         Store.set(user_key, fingerprints)
 
