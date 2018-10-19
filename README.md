@@ -1,4 +1,4 @@
-# discourse-fingerprint [![Build Status](https://travis-ci.org/udan11/discourse-fingerprint.svg?branch=master)](https://travis-ci.org/udan11/discourse-fingerprint)
+# discourse-fingerprint [![Build Status](https://travis-ci.org/discourse/discourse-fingerprint.svg?branch=master)](https://travis-ci.org/discourse/discourse-fingerprint)
 
 Discourse Fingerprint plugin is a tool for administrators and moderators that
 help combating [internet trolls](https://en.wikipedia.org/wiki/Internet_troll)
@@ -7,7 +7,7 @@ and their identification-evasion techniques.
 ## Installation
 
 Follow [Install a Plugin](https://meta.discourse.org/t/install-a-plugin/19157)
-how-to from the official Discourse Meta, using `git clone https://github.com/udan11/discourse-fingerprint.git`
+how-to from the official Discourse Meta, using `git clone https://github.com/discourse/discourse-fingerprint.git`
 as the plugin command.
 
 ## Usage
