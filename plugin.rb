@@ -51,7 +51,7 @@ after_initialize do
     end
 
     class Engine < ::Rails::Engine
-      engine_name DiscourseFingerprint::PLUGIN_NAME
+      engine_name PLUGIN_NAME
       isolate_namespace DiscourseFingerprint
     end
 
@@ -289,6 +289,8 @@ after_initialize do
 
     # Controller used to record new user fingerprints.
     class FingerprintController < ::ApplicationController
+      requires_plugin PLUGIN_NAME
+
       before_action :ensure_logged_in
       skip_before_action :check_xhr
 
@@ -305,7 +307,7 @@ after_initialize do
         # This requires recomputing the fingerprint hash.
         FINGERPRINTED_HEADERS.each { |h| data[h] = request.headers[h] }
         hash = Digest::SHA1::hexdigest(data.values.map(&:to_s).sort.to_s)
-        DiscourseFingerprint::Fingerprint.add(user_id, "#{type}+", hash, data)
+        Fingerprint.add(user_id, "#{type}+", hash, data)
 
         # Compute Fingerprintjs2 hash without audio & canvas fingerprinting.
         # There are browser extensions that can block these fingerprinting
@@ -313,7 +315,7 @@ after_initialize do
         if type == 'fingerprintjs2'
           new_data = data.reject { |k, _| ["#{type}_hash", 'audio_fp', 'canvas'].include?(k) }
           new_hash = Digest::SHA1::hexdigest(new_data.values.map(&:to_s).sort.to_s)
-          DiscourseFingerprint::Fingerprint.add(user_id, "#{type}-simple", new_hash, new_data)
+          Fingerprint.add(user_id, "#{type}-simple", new_hash, new_data)
         end
       end
     end
@@ -321,9 +323,10 @@ after_initialize do
     # Controller used by administrators to generate reports and handle
     # fingerprints.
     class FingerprintAdminController < ::Admin::AdminController
+      requires_plugin PLUGIN_NAME
 
       def index
-        matches = DiscourseFingerprint::Fingerprint.get_matches
+        matches = Fingerprint.get_matches
 
         users = Hash[User.where(id: Set[matches.flatten]).map { |x| [x.id, x] }]
 
@@ -343,7 +346,7 @@ after_initialize do
       # matching users having similar fingerprints.
       def report
         user = User.where(username: params[:username]).first
-        fingerprints = DiscourseFingerprint::Fingerprint.get_fingerprints(user.id)
+        fingerprints = Fingerprint.get_fingerprints(user.id)
 
         # Looking up all matching users and augmenting original fingerprint
         # data.
@@ -368,7 +371,7 @@ after_initialize do
       def ignore
         users = User.where(username: [params[:username], params[:other_username]]).pluck(:id)
 
-        DiscourseFingerprint::Fingerprint.ignore(users[0], users[1])
+        Fingerprint.ignore(users[0], users[1])
       end
     end
   end
