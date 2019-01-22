@@ -10,7 +10,7 @@
       <div class="section-body">
         {{user-selector single=true
                         usernames=username
-                        onChangeCallback='updateReport'
+                        onChangeCallback=(action "updateReport")
                         placeholderKey='user.username.title'
                         canReceiveUpdates='true'}}
         <p>{{{i18n 'fingerprint.info' algorithm='<a href="https://github.com/Valve/fingerprintjs2">Fingeprintjs2</a>'}}}</p>
