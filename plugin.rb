@@ -300,26 +300,25 @@ after_initialize do
 
       def index
         user_id = current_user.id
-        type    = params.require(:type)
-        hash    = params.fetch(:hash, nil)
-        data    = params.fetch(:data, {})
+        type = params.require(:type)
+        data = JSON.parse(params.require(:data))
 
-        # Saving original hash value.
-        data["#{type}_hash"] = hash
+        # Storing fingerprint generated using only client-side data.
+        hash = Digest::SHA1::hexdigest(data.values.map(&:to_s).sort.to_s)
+        Fingerprint.add(user_id, "#{type}-headers", hash, data)
 
         # Adding request headers to fingerprint data for a better accuracy.
-        # This requires recomputing the fingerprint hash.
         FINGERPRINTED_HEADERS.each { |h| data[h] = request.headers[h] }
         hash = Digest::SHA1::hexdigest(data.values.map(&:to_s).sort.to_s)
-        Fingerprint.add(user_id, "#{type}+", hash, data)
+        Fingerprint.add(user_id, "#{type}", hash, data)
 
         # Compute Fingerprintjs2 hash without audio & canvas fingerprinting.
         # There are browser extensions that can block these fingerprinting
         # methods.
-        if type == 'fingerprintjs2'
-          new_data = data.reject { |k, _| ["#{type}_hash", 'audio_fp', 'canvas'].include?(k) }
+        if type == 'fingerprintjs2_v2'
+          new_data = data.reject { |k, _| k == 'audio' || k == 'canvas' }
           new_hash = Digest::SHA1::hexdigest(new_data.values.map(&:to_s).sort.to_s)
-          Fingerprint.add(user_id, "#{type}-simple", new_hash, new_data)
+          Fingerprint.add(user_id, "#{type}-audio-canvas", new_hash, new_data)
         end
       end
     end
