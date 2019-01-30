@@ -8,6 +8,10 @@ enabled_site_setting :fingerprint_enabled
 
 add_admin_route 'fingerprint.title', 'fingerprint'
 
+# Register custom stylesheet.
+register_asset "stylesheets/common/fingerprint.scss"
+[ "desktop", "info", "mobile" ].each { |i| register_svg_icon i }
+
 after_initialize do
 
   require_dependency 'admin/admin_controller'

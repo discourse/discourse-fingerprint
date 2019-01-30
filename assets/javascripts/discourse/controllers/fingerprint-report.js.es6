@@ -34,7 +34,8 @@ export default Ember.Controller.extend({
     showFingerprintDetails(fingerprint) {
       showModal("fingerprint-details").setProperties({
         fingerprint,
-        isFingerprintjs2: fingerprint.type === "fingerprintjs2"
+        /** @var Data field of fingerprint is array for legacy fingerprints. */
+        isDataArray: Array.isArray(fingerprint.data)
       });
     },
 

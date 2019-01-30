@@ -1,17 +1,17 @@
 {{#d-modal-body title="fingerprint.details"}}
-  <table>
-    {{#if isFingerprintjs2}}
+  <table class="fingerprint">
+    {{#if isDataArray}}
       {{#each-in fingerprint.data as |idx data|}}
         <tr>
-          <td>{{data.key}}</td>
-          <td>{{data.value}}</td>
+          <td class="key">{{data.key}}</td>
+          <td class="value">{{data.value}}</td>
         </tr>
       {{/each-in}}
     {{else}}
       {{#each-in fingerprint.data as |key value|}}
         <tr>
-          <td>{{key}}</td>
-          <td>{{value}}</td>
+          <td class="key">{{key}}</td>
+          <td class="value">{{value}}</td>
         </tr>
       {{/each-in}}
     {{/if}}
