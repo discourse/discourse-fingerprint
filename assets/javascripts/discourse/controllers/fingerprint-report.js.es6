@@ -3,13 +3,13 @@ import computed from "ember-addons/ember-computed-decorators";
 import showModal from "discourse/lib/show-modal";
 
 export default Ember.Controller.extend({
+  queryParams: ["username"],
+
   username: "",
 
-  all_matches: [],
-
   user: null,
-  fingerprints: [],
   matches: [],
+  fingerprints: [],
 
   @computed("user", "username")
   showReport(user, username) {
@@ -18,51 +18,68 @@ export default Ember.Controller.extend({
 
   init() {
     this._super(...arguments);
-
-    ajax("/admin/plugins/fingerprint", {
-      type: "GET"
-    }).then(response => {
-      this.set("all_matches", response.matches);
-    });
+    this.update();
   },
 
-  actions: {
-    viewReportFor(user) {
-      this.set("username", user.username);
-    },
+  update(username) {
+    this.setProperties({ fingerprints: [], matches: [] });
 
-    showFingerprintDetails(fingerprint) {
-      showModal("fingerprint-details").setProperties({
-        fingerprint,
-        /** @var Data field of fingerprint is array for legacy fingerprints. */
-        isDataArray: Array.isArray(fingerprint.data)
-      });
-    },
-
-    updateReport() {
-      const username = this.get("username");
-      if (!username) {
-        return;
-      }
-
-      ajax("/admin/plugins/fingerprint/report", {
+    if (username) {
+      return ajax("/admin/plugins/fingerprint/user_report", {
         type: "GET",
         data: { username }
       }).then(response => {
-        this.setProperties({
-          user: response.user,
-          matches: response.matches,
-          fingerprints: response.fingerprints
-        });
+        const { user, fingerprints } = response;
+
+        const matches = [];
+        const matchesSet = new Set();
+        fingerprints.forEach(fp =>
+          fp.matches.forEach(u => {
+            if (!matchesSet.has(u.id)) {
+              matchesSet.add(u.id);
+              matches.push(u);
+            }
+          })
+        );
+
+        this.setProperties({ user, fingerprints, matches });
       });
+    } else {
+      return ajax("/admin/plugins/fingerprint", {
+        type: "GET"
+      }).then(response => {
+        this.set("matches", response.matches);
+        this.set("flagged", response.flagged);
+      });
+    }
+  },
+
+  actions: {
+    onChange() {
+      return this.update(this.username);
     },
 
-    addIgnore(other_username) {
-      const username = this.get("username");
-      ajax("/admin/plugins/fingerprint/ignore", {
+    viewReportForUser(user) {
+      this.set("username", user.username);
+      return this.update(user.username);
+    },
+
+    showDetails(fingerprint) {
+      showModal("fingerprint-details").setProperties({ fingerprint });
+    },
+
+    flag(type, value, remove) {
+      return ajax("/admin/plugins/fingerprint/flag", {
+        type: "PUT",
+        data: { type, value, remove }
+      }).then(() => this.send("onChange"));
+    },
+
+    ignore(other_username) {
+      return ajax("/admin/plugins/fingerprint/ignore", {
         type: "POST",
-        data: { username, other_username }
-      }).andThen(() => this.send("updateReport"));
+        data: { username: this.username, other_username }
+      }).then(() => this.send("onChange"));
     }
   }
 });

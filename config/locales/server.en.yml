@@ -4,3 +4,5 @@ en:
     max_fingerprints: "Maximum number of fingerprints stored for each user."
     max_fingerprint_matches: "Maximum number of latest matches shown in the dashboard."
     min_fingerprints_for_match: "Minimum number of fingerprints required to report a match."
+  fingerprint:
+    silenced: 'silenced automatically'

@@ -10,7 +10,7 @@
       <div class="section-body">
         {{user-selector single=true
                         usernames=username
-                        onChangeCallback=(action "updateReport")
+                        onChangeCallback=(action "onChange")
                         placeholderKey='user.username.title'
                         canReceiveUpdates='true'}}
         <p>{{{i18n 'fingerprint.info' algorithm='<a href="https://github.com/Valve/fingerprintjs2">Fingeprintjs2</a>'}}}</p>
@@ -42,7 +42,7 @@
                     {{/user-link}}
                   </td>
                   <td>
-                    <a {{action 'addIgnore' u.username}}>{{i18n 'admin.flags.ignore_flag'}}</a>
+                    <a {{action 'ignore' u.username}}>{{i18n 'js.fingerprint.matches_ignore'}}</a>
                   </td>
                 </tr>
               {{/each}}
@@ -76,10 +76,10 @@
             {{#each fingerprints as |f|}}
             <tr>
               <td>{{d-icon f.device_type}}</td>
-              <td>{{f.type}}</td>
-              <td>{{f.hash}}</td>
-              <td>{{format-date f.first_time}}</td>
-              <td>{{format-date f.last_time}}</td>
+              <td>{{f.name}}</td>
+              <td>{{f.value}}</td>
+              <td>{{format-date f.created_at}}</td>
+              <td>{{format-date f.updated_at}}</td>
               <td>
                 <p>
                   {{#each f.matches as |u|}}
@@ -87,11 +87,13 @@
                       {{avatar u imageSize="small"}}
                       {{u.username}}
                     {{/user-link}}
+                  {{else}}
+                    -
                   {{/each}}
                 </p>
               </td>
               <td>
-                <a href {{action 'showFingerprintDetails' f}}>
+                <a href {{action 'showDetails' f}}>
                   {{d-icon "info"}}
                 </a>
               </td>
@@ -105,28 +107,81 @@
     </div>
   {{else}}
     <!-- Show latest matches if no user was selected. -->
-    <div class="section">
+    <div class="section-top">
       <div class="section-title">
         <h2>{{i18n 'fingerprint.matches_latest'}}</h2>
       </div>
       <div class="section-body">
-        {{#if all_matches.length}}
+        {{#if matches.length}}
           <table>
-          {{#each all_matches as |us|}}
             <tr>
-              {{#each us as |u|}}
-                <td>
-                  <a href {{action 'viewReportFor' u}}>
-                    {{avatar u imageSize="small"}}
-                    {{u.username}}
-                  </a>
-                </td>
-              {{/each}}
+              <th>{{i18n 'fingerprint.results.algorithm'}}</th>
+              <th>{{i18n 'fingerprint.results.hash_value'}}</th>
+              <th></th>
+              <th></th>
+              <th></th>
             </tr>
-          {{/each}}
+            {{#each matches as |match|}}
+              <tr>
+                <td>{{match.name}}</td>
+                <td>{{match.value}}</td>
+                <td><a {{action 'flag' 'hide' match.value}}>{{i18n 'js.fingerprint.hide'}}</a></td>
+                <td><a {{action 'flag' 'silence' match.value}}>{{i18n 'js.fingerprint.silence'}}</a></td>
+                <td>
+                  {{#each match.users as |user|}}
+                    <a href {{action 'viewReportForUser' user}}>
+                      {{avatar user imageSize="small"}}
+                      {{user.username}}
+                    </a>
+                  {{/each}}
+                </td>
+              </tr>
+            {{/each}}
           </table>
         {{else}}
           {{i18n 'fingerprint.matches_not_found'}}
+        {{/if}}
+      </div>
+    </div>
+
+    <div class="section-top">
+      <div class="section-title">
+        <h2>{{i18n 'fingerprint.flagged'}}</h2>
+      </div>
+      <div class="section-body">
+        {{{i18n 'fingerprint.flagged_instructions'}}}
+
+        {{#if flagged.length}}
+          <table>
+            <tr>
+              <th>{{i18n 'fingerprint.results.hash_value'}}</th>
+              <th>{{i18n 'fingerprint.results.users_count'}}</th>
+              <th></th>
+              <th></th>
+            </tr>
+            {{#each flagged as |fingerprint flags|}}
+              <tr>
+                <td>{{fingerprint.value}}</td>
+                <td>{{fingerprint.count}}</td>
+                <td>
+                  {{#if fingerprint.hidden}}
+                    <a {{action 'flag' 'hide' fingerprint.value 'yes'}}>{{i18n 'js.fingerprint.unhide'}}</a>
+                  {{else}}
+                    <a {{action 'flag' 'hide' fingerprint.value      }}>{{i18n 'js.fingerprint.hide'}}</a>
+                  {{/if}}
+                </td>
+                <td>
+                  {{#if fingerprint.silenced}}
+                    <a {{action 'flag' 'silence' fingerprint.value 'yes'}}>{{i18n 'js.fingerprint.unsilence'}}</a>
+                  {{else}}
+                    <a {{action 'flag' 'silence' fingerprint.value      }}>{{i18n 'js.fingerprint.silence'}}</a>
+                  {{/if}}
+                </td>
+              </tr>
+            {{/each}}
+          </table>
+        {{else}}
+          {{i18n 'fingerprint.flagged_not_found'}}
         {{/if}}
       </div>
     </div>

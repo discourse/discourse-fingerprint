@@ -1,20 +1,11 @@
 {{#d-modal-body title="fingerprint.details"}}
   <table class="fingerprint">
-    {{#if isDataArray}}
-      {{#each-in fingerprint.data as |idx data|}}
-        <tr>
-          <td class="key">{{data.key}}</td>
-          <td class="value">{{data.value}}</td>
-        </tr>
-      {{/each-in}}
-    {{else}}
-      {{#each-in fingerprint.data as |key value|}}
-        <tr>
-          <td class="key">{{key}}</td>
-          <td class="value">{{value}}</td>
-        </tr>
-      {{/each-in}}
-    {{/if}}
+    {{#each-in fingerprint.data as |key value|}}
+      <tr>
+        <td class="key">{{key}}</td>
+        <td class="value">{{value}}</td>
+      </tr>
+    {{/each-in}}
   </table>
 {{/d-modal-body}}
 

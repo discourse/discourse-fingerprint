@@ -4,6 +4,23 @@ en:
       title: 'Fingerprint'
       info: 'User devices will be fingerprinted once per session using {{algorithm}}.'
       details: 'Details'
+      flagged: 'Flagged Fingerprints'
+      flagged_instructions: |
+        <p>
+        A flagged fingerprint is a fingerprint that was hidden or silenced.
+        A <i>hidden fingerprint</i> will not be shown in the <i>Latest matches</i> section.
+        A <i>silenced fingerprint</i> will cause all users with the given fingerprint to be silenced next time they are fingerprinted.
+        </p>
+
+        <p>
+        Silencing a fingerprint should be used only as a last resort because it is not guaranteed that it always matches the same user.
+        For example, users with similar configuration and hardware (i.e. same phone) have a high chance of matching.
+        </p>
+      flagged_not_found: 'No fingerprints were flagged.'
+      hide: 'hide'
+      unhide: 'unhide'
+      silence: 'silence'
+      unsilence: 'unsilence'
       none: 'This user has no recorded fingerprints.'
       matches_for: 'Matches for'
       matches_latest: 'Latest matches'
@@ -11,9 +28,11 @@ en:
         one: '{{count}} user has matching fingerprints.'
         other: '{{count}} users have matching fingerprints.'
       matches_not_found: 'No similar signature were found.'
+      matches_ignore: "ignore"
       results:
         algorithm: 'Algorithm'
         hash_value: 'Hash value'
         first_seen: 'First seen'
         last_seen: 'Last seen'
         matches: 'Matches'
+        users_count: 'Users count'

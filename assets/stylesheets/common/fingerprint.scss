@@ -1,5 +1,13 @@
 table.fingerprint {
+  td.key {
+    font-weight: bold;
+    padding-right: 1em;
+  }
+
   td.value {
+    font-family: Consolas, Menlo, Monaco, "Lucida Console", "Liberation Mono",
+      "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace,
+      serif;
     word-break: break-all;
   }
 }

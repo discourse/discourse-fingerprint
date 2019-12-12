@@ -18,18 +18,12 @@ export default {
         () => {
           /* global Fingerprint2 */
           Fingerprint2.get(components => {
-            // Converting components array to a map.
-            let componentsMap = {};
-            components.forEach(e => {
-              componentsMap[e.key] = e.value;
-            });
+            const componentsMap = {};
+            components.forEach(e => (componentsMap[e.key] = e.value));
 
             ajax("/fingerprint", {
               type: "POST",
-              data: {
-                type: "fingerprintjs2_v2",
-                data: JSON.stringify(componentsMap)
-              }
+              data: { data: JSON.stringify(componentsMap) }
             });
           });
         }

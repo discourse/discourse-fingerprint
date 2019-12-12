@@ -3,5 +3,9 @@ export default Discourse.Route.extend({
 
   renderTemplate() {
     this.render("fingerprintReport");
+  },
+
+  setupController(controller) {
+    controller.update(controller.username);
   }
 });
