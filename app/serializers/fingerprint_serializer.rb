@@ -5,12 +5,38 @@ class FingerprintSerializer < ApplicationSerializer
              :value,
              :data,
              :device_type,
-             :matches,
              :created_at,
-             :updated_at
+             :updated_at,
+             :user_ids,
+             :hidden,
+             :silenced
+
+  def include_data?
+    data.present?
+  end
 
   def data
-    JSON.parse(object.data) rescue {}
+    begin
+      if object.data
+        data = JSON.parse(object.data)
+        return data if data.is_a?(Hash) && data.keys.length > 0
+      end
+    rescue JSON::ParserError
+    end
+
+    nil
+  end
+
+  def include_device_type?
+    data.present?
+  end
+
+  def include_created_at?
+    object.has_attribute?(:created_at)
+  end
+
+  def include_updated_at?
+    object.has_attribute?(:updated_at)
   end
 
   def device_type
@@ -18,12 +44,31 @@ class FingerprintSerializer < ApplicationSerializer
     MobileDetection.mobile_device?(user_agent) ? 'mobile' : 'desktop'
   end
 
-  def include_matches?
-    scope.present?
+  def include_user_ids?
+    !!user_ids
   end
 
-  def matches
-    matches = scope[:matches][object.value] || []
-    matches.map! { |id| BasicUserSerializer.new(scope[:users][id], root: false) }
+  def user_ids
+    if object.has_attribute?(:user_ids)
+      object.user_ids || []
+    elsif scope.present? && scope[:user_ids].present?
+      scope[:user_ids][object.value] || []
+    end
+  end
+
+  def include_hidden?
+    scope.present? && scope[:flagged].present?
+  end
+
+  def hidden
+    scope[:flagged][object.value]&.hidden
+  end
+
+  def include_silenced?
+    scope.present? && scope[:flagged].present?
+  end
+
+  def silenced
+    scope[:flagged][object.value]&.silenced
   end
 end

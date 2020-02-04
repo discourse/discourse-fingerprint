@@ -1,3 +1,12 @@
+.dashboard-fingerprint {
+  .section {
+    margin-bottom: 1em;
+  }
+  td.details-col {
+    white-space: nowrap;
+  }
+}
+
 table.fingerprint {
   td.key {
     font-weight: bold;

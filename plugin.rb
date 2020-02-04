@@ -11,56 +11,19 @@ enabled_site_setting :fingerprint_enabled
 add_admin_route 'fingerprint.title', 'fingerprint'
 
 register_asset 'stylesheets/common/fingerprint.scss'
-%w[desktop info mobile].each { |i| register_svg_icon(i) }
+%w[desktop info mobile eye eye-slash microphone microphone-slash user user-slash].each { |i| register_svg_icon(i) }
 
 after_initialize do
   module ::DiscourseFingerprint
     PLUGIN_NAME         = 'discourse-fingerprint'
     IGNORE_CUSTOM_FIELD = 'fingerprint_ignore_user_ids'
 
-    def self.get_hidden
-      get_flagged('hide')
-    end
-
-    def self.get_silenced
-      get_flagged('silence')
-    end
-
-    def self.get_flagged(type)
-      if flagged = PluginStore.get(PLUGIN_NAME, "flagged_#{type}").presence
-        flagged = flagged.split(',')
-        flagged.uniq!
-      else
-        flagged = []
-      end
-
-      flagged
-    end
-
-    def self.flag(type, value, add: true)
-      flagged = get_flagged(type)
-
-      if add && !flagged.include?(value)
-        flagged << value
-      elsif !add && flagged.include?(value)
-        flagged.delete(value)
-      else
-        return false
-      end
-
-      PluginStore.set(PLUGIN_NAME, "flagged_#{type}", flagged.join(','))
-    end
-
     def self.get_ignores(user)
       if ignores = user.custom_fields[IGNORE_CUSTOM_FIELD].presence
-        ignores = ignores.split(',').map(&:to_i)
-        ignores << user.id
-        ignores.uniq!
+        ignores.split(',').map(&:to_i).uniq
       else
-        ignores = [user.id]
+        []
       end
-
-      ignores
     end
 
     def self.ignore(user, other, add: true)
@@ -78,11 +41,13 @@ after_initialize do
     end
   end
 
-  load File.expand_path('../app/controllers/admin/fingerprint_controller.rb', __FILE__)
-  load File.expand_path('../app/controllers/fingerprint_controller.rb', __FILE__)
-  load File.expand_path('../app/models/fingerprint.rb', __FILE__)
-  load File.expand_path('../app/serializers/fingerprint_serializer.rb', __FILE__)
-  load File.expand_path('../app/serializers/fingerprint_users_serializer.rb', __FILE__)
+  require File.expand_path('../app/controllers/admin/fingerprint_controller.rb', __FILE__)
+  require File.expand_path('../app/controllers/fingerprint_controller.rb', __FILE__)
+  require File.expand_path('../app/jobs/scheduled/fingerprint_consistency.rb', __FILE__)
+  require File.expand_path('../app/models/fingerprint.rb', __FILE__)
+  require File.expand_path('../app/models/flagged_fingerprint.rb', __FILE__)
+  require File.expand_path('../app/serializers/fingerprint_serializer.rb', __FILE__)
+  require File.expand_path('../app/serializers/flagged_fingerprint_serializer.rb', __FILE__)
 
   class DiscourseFingerprint::Engine < Rails::Engine
     engine_name DiscourseFingerprint::PLUGIN_NAME

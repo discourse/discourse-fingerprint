@@ -12,48 +12,50 @@ class DiscourseFingerprint::FingerprintController < ApplicationController
   SCRIPT_METHOD_NAME = 'fingerprintjs2'
 
   def index
-    hash = cookies[:fp]
-    cookies.permanent[:fp] = hash = SecureRandom.hex if hash.blank?
-    Fingerprint.create_or_touch!(user: current_user, name: COOKIE_METHOD_NAME, value: hash)
+    hashes = []
+
+    if SiteSetting.fingerprint_cookie?
+      hash = cookies[:fp]
+      cookies.permanent[:fp] = hash = SecureRandom.hex if hash.blank?
+      hashes << hash
+      Fingerprint.create_or_touch!(user: current_user, name: COOKIE_METHOD_NAME, value: hash)
+    end
+
+    if SiteSetting.fingerprint_ip?
+      hashes << (hash = request.remote_ip.to_s)
+      Fingerprint.create_or_touch!(user: current_user, name: 'IP', value: hash, data: DiscourseIpInfo.get(request.remote_ip))
+    end
 
     begin
       data = JSON.parse(params.require(:data))
     rescue JSON::ParserError
-      raise Discourse::InvalidParameters(:data)
     end
 
-    silenced = DiscourseFingerprint::get_silenced
-    silence_user = false
+    if data
+      hashes << (hash = Digest::SHA1::hexdigest(data.values.map(&:to_s).sort.to_s))
+      Fingerprint.create_or_touch!(user: current_user, name: SCRIPT_METHOD_NAME, value: hash, data: JSON.dump(data))
 
-    hash = request.remote_ip.to_s
-    silence_user ||= silenced.include?(hash)
-    Fingerprint.create_or_touch!(user: current_user, name: 'IP', value: hash, data: {})
+      # Compute hash without audio & canvas fingerprint info.
+      # There are browser extensions that can block these fingerprinting
+      # methods and produce weird fingerprints.
+      data = data.reject! { |k, _| k == 'audio' || k == 'canvas' }
+      hashes << (hash = Digest::SHA1::hexdigest(data.values.map(&:to_s).sort.to_s))
+      Fingerprint.create_or_touch!(user: current_user, name: "#{SCRIPT_METHOD_NAME}-audio-canvas", value: hash, data: JSON.dump(data))
 
-    hash = Digest::SHA1::hexdigest(data.values.map(&:to_s).sort.to_s)
-    silence_user ||= silenced.include?(hash)
-    Fingerprint.create_or_touch!(user: current_user, name: SCRIPT_METHOD_NAME, value: hash, data: JSON.dump(data))
+      # Add request headers to fingerprint data for a better accuracy.
+      FINGERPRINTED_HEADERS.each { |h| data[h] = request.headers[h] }
+      hashes << (hash = Digest::SHA1::hexdigest(data.values.map(&:to_s).sort.to_s))
+      Fingerprint.create_or_touch!(user: current_user, name: "#{SCRIPT_METHOD_NAME}+headers", value: hash, data: JSON.dump(data))
+    end
 
-    # Compute hash without audio & canvas fingerprint info.
-    # There are browser extensions that can block these fingerprinting methods.
-    data = data.reject! { |k, _| k == 'audio' || k == 'canvas' }
-    hash = Digest::SHA1::hexdigest(data.values.map(&:to_s).sort.to_s)
-    silence_user ||= silenced.include?(hash)
-    Fingerprint.create_or_touch!(user: current_user, name: "#{SCRIPT_METHOD_NAME}-audio-canvas", value: hash, data: JSON.dump(data))
-
-    # Add request headers to fingerprint data for a better accuracy.
-    FINGERPRINTED_HEADERS.each { |h| data[h] = request.headers[h] }
-    hash = Digest::SHA1::hexdigest(data.values.map(&:to_s).sort.to_s)
-    silence_user ||= silenced.include?(hash)
-    Fingerprint.create_or_touch!(user: current_user, name: "#{SCRIPT_METHOD_NAME}+headers", value: hash, data: JSON.dump(data))
-
-    if silence_user
+    if !current_user.silenced? && FlaggedFingerprint.find_by(value: hashes, silenced: true).present?
       UserSilencer.new(
         current_user,
         Discourse.system_user,
         silenced_till: 1000.years.from_now,
         reason: I18n.t('fingerprint.silenced'),
         keep_posts: true
-      )
+      ).silence
     end
 
     render json: success_json

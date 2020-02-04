@@ -1,0 +1,50 @@
+<div class="section">
+  <div class="section-title">
+    <h2>{{i18n "fingerprint.flagged"}}</h2>
+  </div>
+  <div class="section-body">
+    {{{i18n "fingerprint.flagged_instructions"}}}
+
+    {{#if flagged.length}}
+      <table>
+        <tr>
+          <th>{{i18n "fingerprint.results.hash"}}</th>
+          <th>{{i18n "fingerprint.results.matches"}}</th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+        {{#each flagged as |fingerprint flags|}}
+          <tr>
+            <td>
+              <small>{{fingerprint.name}}</small><br/>
+              {{fingerprint.value}}
+            </td>
+            <td>{{fingerprint.count}}</td>
+            <td>
+              {{#if fingerprint.hidden}}
+                <a {{action flag "hide" fingerprint "yes"}}>{{d-icon "eye"}} {{i18n "js.fingerprint.unhide"}}</a>
+              {{else}}
+                <a {{action flag "hide" fingerprint}}>{{d-icon "eye-slash"}} {{i18n "js.fingerprint.hide"}}</a>
+              {{/if}}
+            </td>
+            <td>
+              {{#if fingerprint.silenced}}
+                <a {{action flag "silence" fingerprint "yes"}}>{{d-icon "microphone"}} {{i18n "js.fingerprint.unsilence"}}</a>
+              {{else}}
+                <a {{action flag "silence" fingerprint}}>{{d-icon "microphone-slash"}} {{i18n "js.fingerprint.silence"}}</a>
+              {{/if}}
+            </td>
+            <td>
+              {{#if fingerprint.data}}
+                <a {{action showFingerprintData fingerprint.data}}>{{d-icon "info"}} {{i18n "js.fingerprint.details"}}</a>
+              {{/if}}
+            </td>
+          </tr>
+        {{/each}}
+      </table>
+    {{else}}
+      {{i18n "fingerprint.flagged_not_found"}}
+    {{/if}}
+  </div>
+</div>

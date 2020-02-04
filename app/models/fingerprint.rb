@@ -7,9 +7,10 @@ class Fingerprint < ActiveRecord::Base
     select(
       :name,
       :value,
+      :data,
       'ARRAY_AGG(user_id ORDER BY user_id) user_ids'
     )
-      .group(:value, :name)
+      .group(:value, :name, :data)
       .having('COUNT(*) > 1')
   end
 

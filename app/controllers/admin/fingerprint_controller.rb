@@ -6,35 +6,24 @@ class DiscourseFingerprint::FingerprintAdminController < Admin::AdminController
   def index
     matches = Fingerprint
       .matches
-      .where.not(value: DiscourseFingerprint::get_hidden)
+      .where.not(value: FlaggedFingerprint.select(:value))
       .order('MAX(updated_at) DESC')
-      .limit(100)
+      .limit(20)
 
-    users = User
-      .where(id: matches.map(&:user_ids).flatten.uniq)
-      .to_h { |u| [u.id, u] }
+    flagged = FlaggedFingerprint.all
 
-    hidden = Set.new(DiscourseFingerprint::get_hidden)
-    silenced = Set.new(DiscourseFingerprint::get_silenced)
-    flagged = hidden + silenced
-    counts = Fingerprint
-      .select(:value, 'COUNT(*) count')
-      .where(value: flagged)
-      .group(:value)
-      .to_h { |fp| [fp.value, fp.count] }
+    flagged_fingerprints = Fingerprint
+      .select(:name, :value, :data, 'COUNT(*) count')
+      .where(value: FlaggedFingerprint.select(:value))
+      .group(:name, :value, :data)
+      .to_h { |fp| [fp.value, fp] }
 
-    flagged = flagged.to_a.map do |fp|
-      {
-        value: fp,
-        count: counts[fp] || 0,
-        hidden: hidden.include?(fp),
-        silenced: silenced.include?(fp)
-      }
-    end
+    users = User.where(id: matches.map(&:user_ids).flatten.uniq)
 
     render json: {
-      matches: serialize_data(matches, FingerprintUsersSerializer, scope: { users: users }),
-      flagged: flagged
+      fingerprints: serialize_data(matches, FingerprintSerializer, scope: { flagged: flagged.to_h { |fp| [fp.value, fp] } }),
+      flagged: serialize_data(flagged, FlaggedFingerprintSerializer, scope: { fingerprints: flagged_fingerprints }),
+      users: users.map { |u| [u.id, BasicUserSerializer.new(u, root: false)] }.to_h
     }
   end
 
@@ -49,38 +38,51 @@ class DiscourseFingerprint::FingerprintAdminController < Admin::AdminController
     user = User.find_by_username(params[:username])
     raise Discourse::InvalidParameters.new(:username) if !user
 
-    hidden_values = DiscourseFingerprint::get_hidden
     ignored_ids = DiscourseFingerprint::get_ignores(user)
 
     fingerprints = Fingerprint
       .where(user: user)
-      .where.not(value: hidden_values)
+      .where.not(value: FlaggedFingerprint.select(:value).where(hidden: true))
 
-    matches = Fingerprint.matches
+    user_ids = Fingerprint
+      .matches
       .where(value: fingerprints.pluck(:value))
-      .to_h { |match| [match.value, match.user_ids - ignored_ids] }
+      .to_h { |match| [match.value, match.user_ids - [user.id]] }
 
-    users = User
-      .where(id: matches.values.flatten.uniq)
-      .to_h { |u| [u.id, u] }
+    users = User.where(id: user_ids.values.flatten.uniq).or(User.where(id: ignored_ids))
 
     render json: {
       user: BasicUserSerializer.new(user, root: false),
-      fingerprints: serialize_data(fingerprints, FingerprintSerializer, scope: { matches: matches, users: users }),
-      ignores: User.where(id: ignored_ids - [user.id]).map { |u| BasicUserSerializer.new(u, root: false) }
+      ignored_ids: ignored_ids,
+      fingerprints: serialize_data(fingerprints, FingerprintSerializer, scope: { user_ids: user_ids }),
+      users: users.map { |u| [u.id, BasicUserSerializer.new(u, root: false)] }.to_h,
     }
   end
 
   # Hides a match from the 'Latest matches' page.
   #
   # Params:
-  # +type+::    Type of flag
+  # +type+::    Type of flag (hide or silence)
   # +value+::   Value of the fingerprint match to hide
+  # +remove+::  Whether this operation is adding or removing the flag
   def flag
-    raise Discourse::InvalidParameters(:value) if params[:value].blank?
-    raise Discourse::InvalidParameters(:type) if params[:type] != 'hide' && params[:type] != 'silence'
+    raise Discourse::InvalidParameters.new(:value) if params[:value].blank?
+    raise Discourse::InvalidParameters.new(:type)  if params[:type] != 'hide' && params[:type] != 'silence'
 
-    DiscourseFingerprint::flag(params[:type], params[:value], add: params[:remove].blank?)
+    flagged = FlaggedFingerprint.find_by(value: params[:value]) ||
+              FlaggedFingerprint.new(value: params[:value])
+
+    if params[:type] == 'hide'
+      flagged.hidden = params[:remove].blank?
+    elsif params[:type] == 'silence'
+      flagged.silenced = params[:remove].blank?
+    end
+
+    if flagged.hidden || flagged.silenced
+      flagged.save
+    else
+      flagged.delete
+    end
 
     render json: success_json
   end
@@ -90,12 +92,13 @@ class DiscourseFingerprint::FingerprintAdminController < Admin::AdminController
   # Params:
   # +username+::        Name of the first user of the pair
   # +other_username+::  Name of the second user of the pair
+  # +remove+::          Whether this operation is adding or removing the ignore
   def ignore
     users = User.where(username: [params[:username], params[:other_username]])
-    raise Discourse::InvalidParameters if users.size != 2
+    raise Discourse::InvalidParameters.new if users.size != 2
 
-    DiscourseFingerprint::ignore(users[0], users[1])
-    DiscourseFingerprint::ignore(users[1], users[0])
+    DiscourseFingerprint::ignore(users[0], users[1], add: params[:remove].blank?)
+    DiscourseFingerprint::ignore(users[1], users[0], add: params[:remove].blank?)
 
     render json: success_json
   end

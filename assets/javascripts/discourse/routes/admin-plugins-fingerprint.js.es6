@@ -1,4 +1,6 @@
-export default Discourse.Route.extend({
+import Route from "@ember/routing/route";
+
+export default Route.extend({
   controllerName: "fingerprintReport",
 
   renderTemplate() {
