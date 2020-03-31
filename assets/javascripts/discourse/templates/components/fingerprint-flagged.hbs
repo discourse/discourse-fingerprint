@@ -32,7 +32,7 @@
               {{#if fingerprint.silenced}}
                 <a {{action flag "silence" fingerprint "yes"}}>{{d-icon "microphone"}} {{i18n "js.fingerprint.unsilence"}}</a>
               {{else}}
-                <a {{action flag "silence" fingerprint}}>{{d-icon "microphone-slash"}} {{i18n "js.fingerprint.silence"}}</a>
+                <a class="silence" {{action flag "silence" fingerprint}}>{{d-icon "microphone-slash"}} {{i18n "js.fingerprint.silence"}}</a>
               {{/if}}
             </td>
             <td>

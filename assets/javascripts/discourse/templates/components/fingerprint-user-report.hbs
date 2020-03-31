@@ -81,7 +81,7 @@
             {{#if fingerprint.silenced}}
               <a {{action flag "silence" fingerprint "yes"}} title={{i18n "js.fingerprint.unsilence"}}>{{d-icon "microphone"}}</a>
             {{else}}
-              <a {{action flag "silence" fingerprint}} title={{i18n "js.fingerprint.silence"}}>{{d-icon "microphone-slash"}}</a>
+              <a class="silence" {{action flag "silence" fingerprint}} title={{i18n "js.fingerprint.silence"}}>{{d-icon "microphone-slash"}}</a>
             {{/if}}
             {{#if fingerprint.data}}
               <a {{action showFingerprintData fingerprint.data}} title={{i18n "js.fingerprint.details"}}>{{d-icon "info"}}</a>
