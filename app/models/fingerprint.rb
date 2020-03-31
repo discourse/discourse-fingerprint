@@ -26,6 +26,19 @@ class Fingerprint < ActiveRecord::Base
   def self.compute_hash(data)
     Digest::SHA1::hexdigest(data.values.map(&:to_s).sort.to_s)
   end
+
+  def self.is_common(data)
+    return if data.blank?
+
+    platform = data['navigator_platform']
+    user_agent = data['User-Agent'] || data['user_agent']
+
+    !!(
+      platform =~ /(iPad|iPhone|iPod)/ ||
+      user_agent =~ /Version\/(\d+).+?Safari/ ||
+      user_agent =~ /(iPad|iPhone|iPod)/
+    )
+  end
 end
 
 # == Schema Information

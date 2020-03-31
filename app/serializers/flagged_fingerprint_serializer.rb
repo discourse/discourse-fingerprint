@@ -6,7 +6,8 @@ class FlaggedFingerprintSerializer < ApplicationSerializer
              :hidden,
              :silenced,
              :data,
-             :count
+             :count,
+             :is_common
 
   def include_name?
     scope.present? &&
@@ -44,5 +45,13 @@ class FlaggedFingerprintSerializer < ApplicationSerializer
 
   def count
     scope[:fingerprints][value].count
+  end
+
+  def include_is_common?
+    data.present?
+  end
+
+  def is_common
+    Fingerprint.is_common(data)
   end
 end

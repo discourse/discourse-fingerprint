@@ -1,6 +1,6 @@
 <div class="dashboard-next dashboard-fingerprint">
-  <div class="section section-columns">
-    <div class="section-column">
+  <div class="section">
+    <div class="section">
       <div class="section-title">
         <h2>{{i18n "fingerprint.title"}}</h2>
       </div>
@@ -10,13 +10,8 @@
                         onChangeCallback=(action "onChange")
                         placeholderKey="user.username.title"
                         canReceiveUpdates="true"}}
-        <p>
-          <small>{{{i18n "fingerprint.info" algorithm="<a href='https://github.com/Valve/fingerprintjs2'>Fingeprintjs2</a>"}}}</small>
-        </p>
       </div>
     </div>
-
-    <div class="section-column"></div>
   </div>
 
   {{#if showReport}}

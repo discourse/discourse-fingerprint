@@ -8,7 +8,7 @@ class DiscourseFingerprint::FingerprintAdminController < Admin::AdminController
       .matches
       .where.not(value: FlaggedFingerprint.select(:value))
       .order('MAX(updated_at) DESC')
-      .limit(20)
+      .limit(50)
 
     flagged = FlaggedFingerprint.all
 

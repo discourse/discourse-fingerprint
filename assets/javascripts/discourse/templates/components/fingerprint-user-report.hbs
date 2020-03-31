@@ -10,6 +10,8 @@
   </div>
   <div class="section-body">
     {{#if usersArray.length}}
+      <p>{{i18n "fingerprint.matches_found" count=usersArray.length}}</p>
+
       <table>
         <tr>
           <th>{{i18n "fingerprint.results.matching_user"}}</th>
@@ -33,6 +35,8 @@
           </tr>
         {{/each}}
       </table>
+    {{else}}
+      {{i18n "fingerprint.matches_not_found"}}
     {{/if}}
   </div>
 </div>
@@ -56,7 +60,13 @@
         <tr>
           <td>{{d-icon fingerprint.device_type}}</td>
           <td>
-              <small>{{fingerprint.name}}</small><br/>
+              <small>
+                {{fingerprint.name}}
+                {{#if fingerprint.is_common}}
+                  <span data-tooltip={{i18n "fingerprint.common_device"}}>{{d-icon "layer-group"}}</span>
+                {{/if}}
+              </small>
+              <br/>
               {{fingerprint.value}}
           </td>
           <td>{{format-date fingerprint.created_at}}</td>

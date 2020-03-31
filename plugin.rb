@@ -11,7 +11,7 @@ enabled_site_setting :fingerprint_enabled
 add_admin_route 'fingerprint.title', 'fingerprint'
 
 register_asset 'stylesheets/common/fingerprint.scss'
-%w[desktop info mobile eye eye-slash microphone microphone-slash user user-slash].each { |i| register_svg_icon(i) }
+%w[desktop far-eye far-eye-slash info layer-group microphone microphone-slash mobile user user-slash].each { |i| register_svg_icon(i) }
 
 after_initialize do
   module ::DiscourseFingerprint
@@ -41,13 +41,13 @@ after_initialize do
     end
   end
 
-  require File.expand_path('../app/controllers/admin/fingerprint_controller.rb', __FILE__)
-  require File.expand_path('../app/controllers/fingerprint_controller.rb', __FILE__)
-  require File.expand_path('../app/jobs/scheduled/fingerprint_consistency.rb', __FILE__)
-  require File.expand_path('../app/models/fingerprint.rb', __FILE__)
-  require File.expand_path('../app/models/flagged_fingerprint.rb', __FILE__)
-  require File.expand_path('../app/serializers/fingerprint_serializer.rb', __FILE__)
-  require File.expand_path('../app/serializers/flagged_fingerprint_serializer.rb', __FILE__)
+  load File.expand_path('../app/controllers/admin/fingerprint_controller.rb', __FILE__)
+  load File.expand_path('../app/controllers/fingerprint_controller.rb', __FILE__)
+  load File.expand_path('../app/jobs/scheduled/fingerprint_consistency.rb', __FILE__)
+  load File.expand_path('../app/models/fingerprint.rb', __FILE__)
+  load File.expand_path('../app/models/flagged_fingerprint.rb', __FILE__)
+  load File.expand_path('../app/serializers/fingerprint_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/flagged_fingerprint_serializer.rb', __FILE__)
 
   class DiscourseFingerprint::Engine < Rails::Engine
     engine_name DiscourseFingerprint::PLUGIN_NAME

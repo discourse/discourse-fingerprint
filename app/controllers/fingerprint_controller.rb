@@ -36,17 +36,16 @@ class DiscourseFingerprint::FingerprintController < ApplicationController
       hashes << (hash = Fingerprint.compute_hash(data))
       Fingerprint.create_or_touch!(user: current_user, name: SCRIPT_METHOD_NAME, value: hash, data: JSON.dump(data))
 
-      # Compute hash without audio & canvas fingerprint info.
       # There are browser extensions that can block these fingerprinting
       # methods and produce weird fingerprints.
-      data = data.reject! { |k, _| k == 'audio' || k == 'canvas' }
+      data = data.reject! { |k, _| ["audio", "canvas", "fonts", "webgl"].include?(k) }
       hashes << (hash = Fingerprint.compute_hash(data))
-      Fingerprint.create_or_touch!(user: current_user, name: "#{SCRIPT_METHOD_NAME}-audio-canvas", value: hash, data: JSON.dump(data))
+      Fingerprint.create_or_touch!(user: current_user, name: "#{SCRIPT_METHOD_NAME}-", value: hash, data: JSON.dump(data))
 
       # Add request headers to fingerprint data for a better accuracy.
       FINGERPRINTED_HEADERS.each { |h| data[h] = request.headers[h] }
       hashes << (hash = Fingerprint.compute_hash(data))
-      Fingerprint.create_or_touch!(user: current_user, name: "#{SCRIPT_METHOD_NAME}+headers", value: hash, data: JSON.dump(data))
+      Fingerprint.create_or_touch!(user: current_user, name: "#{SCRIPT_METHOD_NAME}+", value: hash, data: JSON.dump(data))
     end
 
     if !current_user.silenced? && FlaggedFingerprint.find_by(value: hashes, silenced: true).present?

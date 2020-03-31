@@ -17,15 +17,21 @@
         {{#each flagged as |fingerprint flags|}}
           <tr>
             <td>
-              <small>{{fingerprint.name}}</small><br/>
+              <small>
+                {{fingerprint.name}}
+                {{#if fingerprint.is_common}}
+                  <span data-tooltip={{i18n "fingerprint.common_device"}}>{{d-icon "layer-group"}}</span>
+                {{/if}}
+              </small>
+              <br/>
               {{fingerprint.value}}
             </td>
             <td>{{fingerprint.count}}</td>
             <td>
               {{#if fingerprint.hidden}}
-                <a {{action flag "hide" fingerprint "yes"}}>{{d-icon "eye"}} {{i18n "js.fingerprint.unhide"}}</a>
+                <a {{action flag "hide" fingerprint "yes"}}>{{d-icon "far-eye"}} {{i18n "js.fingerprint.unhide"}}</a>
               {{else}}
-                <a {{action flag "hide" fingerprint}}>{{d-icon "eye-slash"}} {{i18n "js.fingerprint.hide"}}</a>
+                <a {{action flag "hide" fingerprint}}>{{d-icon "far-eye-slash"}} {{i18n "js.fingerprint.hide"}}</a>
               {{/if}}
             </td>
             <td>

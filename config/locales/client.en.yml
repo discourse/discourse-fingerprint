@@ -2,37 +2,44 @@ en:
   js:
     fingerprint:
       title: 'Fingerprint'
-      info: 'User devices will be fingerprinted once per session using {{algorithm}}.'
-      details: 'Details'
-      flagged: 'Flagged Fingerprints'
+
+      latest_matches: 'Latest Matched Fingerprints'
+      latest_matches_instructions: |
+        <p><small>User devices will be fingerprinted once per session using {{algorithm}}. For more information about fingerprinting algorithms and provide feedback, please go to <a href="https://meta.discourse.org/t/discourse-fingerprint-browser-fingerprinting-plugin/114890">this topic on Discourse Meta</a>.</small></p>
+      hide_common: 'Hide common'
+
+      flagged: 'Hidden or Silenced Fingerprints'
       flagged_instructions: |
         <p>
-        A <i>flagged fingerprint</i> is a fingerprint that was hidden or silenced.
         A <i>hidden fingerprint</i> will not be shown in the <i>Latest Matched Fingerprints</i> section.
-        A <i>silenced fingerprint</i> will cause all users with the given fingerprint to be silenced next time they are fingerprinted.
+        A <i>silenced fingerprint</i> will cause all users with the given fingerprint to be silenced next time they visit.
         </p>
 
         <p>
-        Silencing a fingerprint should be used only as a last resort because it is not guaranteed that it always matches the same user.
-        For example, users with similar configuration and hardware (i.e. same make and model) have a high chance of matching.
+        Silencing a fingerprint should be used only as a last resort as it is not guaranteed that it always matches the same user.
+        For example, users with similar configuration and hardware (devices of same make and model) have a high chance of having matching fingerprints.
         </p>
-      flagged_not_found: 'No fingerprints were flagged.'
+      flagged_not_found: 'No fingerprints were hidden or silenced.'
+
+      matches_for: 'Matches for'
+      matches_found:
+        one: '{{count}} user has matching fingerprints.'
+        other: '{{count}} users have matching fingerprints.'
+      matches_not_found: 'No similar signature were found.'
+      none: 'This user has no recorded fingerprints.'
+
+      common_device: 'This fingerprints looks like it is coming from a common device. The report may not be relevant.'
       hide: 'Hide'
       unhide: 'Unhide'
       silence: 'Silence'
       unsilence: 'Unsilence'
       ignore: 'Ignore'
       unignore: 'Unignore'
-      none: 'This user has no recorded fingerprints.'
-      matches_for: 'Matches for'
-      matches_latest: 'Latest Matched Fingerprints'
-      matches_found:
-        one: '{{count}} user has matching fingerprints.'
-        other: '{{count}} users have matching fingerprints.'
-      matches_not_found: 'No similar signature were found.'
+      details: 'Details'
+
       results:
+        matching_user: 'Matching User'
         hash: 'Algorithm and Hash'
         first_seen: 'First Seen'
         last_seen: 'Last Seen'
         matches: 'Matches'
-        matching_user: 'Matching User'

@@ -5,6 +5,7 @@ class FingerprintSerializer < ApplicationSerializer
              :value,
              :data,
              :device_type,
+             :is_common,
              :created_at,
              :updated_at,
              :user_ids,
@@ -16,19 +17,28 @@ class FingerprintSerializer < ApplicationSerializer
   end
 
   def data
-    begin
-      if object.data
-        data = JSON.parse(object.data)
-        return data if data.is_a?(Hash) && data.keys.length > 0
-      end
-    rescue JSON::ParserError
+    if object.data
+      data = JSON.parse(object.data)
+      return data if data.is_a?(Hash) && data.keys.length > 0
     end
-
-    nil
+  rescue JSON::ParserError
   end
 
   def include_device_type?
     data.present?
+  end
+
+  def device_type
+    user_agent = data['User-Agent'] || data['user_agent']
+    MobileDetection.mobile_device?(user_agent) ? 'mobile' : 'desktop'
+  end
+
+  def include_is_common?
+    data.present?
+  end
+
+  def is_common
+    Fingerprint.is_common(data)
   end
 
   def include_created_at?
@@ -37,11 +47,6 @@ class FingerprintSerializer < ApplicationSerializer
 
   def include_updated_at?
     object.has_attribute?(:updated_at)
-  end
-
-  def device_type
-    user_agent = data['User-Agent'] || data['user_agent']
-    MobileDetection.mobile_device?(user_agent) ? 'mobile' : 'desktop'
   end
 
   def include_user_ids?

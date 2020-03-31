@@ -2,9 +2,15 @@
   .section {
     margin-bottom: 1em;
   }
+
+  th label {
+    display: inline;
+  }
+
   td.details-col {
     white-space: nowrap;
   }
+
   .silence {
     color: $danger;
   }

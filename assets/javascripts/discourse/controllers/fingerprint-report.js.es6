@@ -1,8 +1,12 @@
 import Controller from "@ember/controller";
 import EmberObject from "@ember/object";
+import { registerHelper } from "discourse-common/lib/helpers";
 import { ajax } from "discourse/lib/ajax";
 import showModal from "discourse/lib/show-modal";
 import computed from "ember-addons/ember-computed-decorators";
+
+registerHelper("and", ([a, b]) => a && b);
+registerHelper("not", ([a]) => !a);
 
 export default Controller.extend({
   queryParams: ["username"],
