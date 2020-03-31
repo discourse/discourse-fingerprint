@@ -23,7 +23,8 @@ class DiscourseFingerprint::FingerprintController < ApplicationController
 
     if SiteSetting.fingerprint_ip?
       hashes << (hash = request.remote_ip.to_s)
-      Fingerprint.create_or_touch!(user: current_user, name: 'IP', value: hash, data: DiscourseIpInfo.get(request.remote_ip))
+      info = DiscourseIpInfo.get(request.remote_ip)
+      Fingerprint.create_or_touch!(user: current_user, name: 'IP', value: hash, data: info.presence && JSON.dump(info))
     end
 
     begin
@@ -32,19 +33,19 @@ class DiscourseFingerprint::FingerprintController < ApplicationController
     end
 
     if data
-      hashes << (hash = Digest::SHA1::hexdigest(data.values.map(&:to_s).sort.to_s))
+      hashes << (hash = Fingerprint.compute_hash(data))
       Fingerprint.create_or_touch!(user: current_user, name: SCRIPT_METHOD_NAME, value: hash, data: JSON.dump(data))
 
       # Compute hash without audio & canvas fingerprint info.
       # There are browser extensions that can block these fingerprinting
       # methods and produce weird fingerprints.
       data = data.reject! { |k, _| k == 'audio' || k == 'canvas' }
-      hashes << (hash = Digest::SHA1::hexdigest(data.values.map(&:to_s).sort.to_s))
+      hashes << (hash = Fingerprint.compute_hash(data))
       Fingerprint.create_or_touch!(user: current_user, name: "#{SCRIPT_METHOD_NAME}-audio-canvas", value: hash, data: JSON.dump(data))
 
       # Add request headers to fingerprint data for a better accuracy.
       FINGERPRINTED_HEADERS.each { |h| data[h] = request.headers[h] }
-      hashes << (hash = Digest::SHA1::hexdigest(data.values.map(&:to_s).sort.to_s))
+      hashes << (hash = Fingerprint.compute_hash(data))
       Fingerprint.create_or_touch!(user: current_user, name: "#{SCRIPT_METHOD_NAME}+headers", value: hash, data: JSON.dump(data))
     end
 

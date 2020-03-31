@@ -22,6 +22,10 @@ class Fingerprint < ActiveRecord::Base
 
     create!(attributes)
   end
+
+  def self.compute_hash(data)
+    Digest::SHA1::hexdigest(data.values.map(&:to_s).sort.to_s)
+  end
 end
 
 # == Schema Information
