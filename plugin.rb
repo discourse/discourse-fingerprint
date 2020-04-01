@@ -2,7 +2,7 @@
 
 # name: discourse-fingerprint
 # about: Computes user fingerprints to help administrators combat internet trolls.
-# version: 1.0
+# version: 2.0
 # authors: Dan Ungureanu
 # url: https://github.com/udan11/discourse-fingerprint.git
 
