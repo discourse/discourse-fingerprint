@@ -1,6 +1,6 @@
 {
   "name": "discourse-fingerprint",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "repository": "git@github.com:discourse/discourse-fingerprint.git",
   "author": "Discourse",
   "license": "MIT",
