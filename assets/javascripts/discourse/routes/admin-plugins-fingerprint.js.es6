@@ -9,5 +9,5 @@ export default Route.extend({
 
   setupController(controller) {
     controller.update(controller.username);
-  }
+  },
 });

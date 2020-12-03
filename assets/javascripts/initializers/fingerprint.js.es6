@@ -17,17 +17,17 @@ export default {
       loadScript("/plugins/discourse-fingerprint/javascripts/fp2.js").then(
         () => {
           /* global Fingerprint2 */
-          Fingerprint2.get(components => {
+          Fingerprint2.get((components) => {
             const componentsMap = {};
-            components.forEach(e => (componentsMap[e.key] = e.value));
+            components.forEach((e) => (componentsMap[e.key] = e.value));
 
             ajax("/fingerprint", {
               type: "POST",
-              data: { data: JSON.stringify(componentsMap) }
+              data: { data: JSON.stringify(componentsMap) },
             });
           });
         }
       );
     }, 3000);
-  }
+  },
 };
