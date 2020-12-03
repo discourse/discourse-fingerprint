@@ -5,5 +5,5 @@ export default Component.extend({
   @discourseComputed("users")
   usersArray(users) {
     return Object.values(users);
-  }
+  },
 });

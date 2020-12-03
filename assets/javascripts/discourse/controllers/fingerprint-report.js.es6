@@ -33,44 +33,44 @@ export default Controller.extend({
     if (username) {
       return ajax("/admin/plugins/fingerprint/user_report", {
         type: "GET",
-        data: { username }
-      }).then(response => {
+        data: { username },
+      }).then((response) => {
         const ignoredIdsSet = new Set(response.ignored_ids);
 
         const users = {};
-        Object.values(response.users).forEach(user => {
+        Object.values(response.users).forEach((user) => {
           user.ignored = ignoredIdsSet.has(user.id);
           users[user.id] = EmberObject.create(user);
         });
 
-        const fingerprints = response.fingerprints.map(fingerprint => {
+        const fingerprints = response.fingerprints.map((fingerprint) => {
           fingerprint.user_ids = fingerprint.user_ids || [];
-          fingerprint.users = fingerprint.user_ids.map(id => users[id]);
+          fingerprint.users = fingerprint.user_ids.map((id) => users[id]);
           return EmberObject.create(fingerprint);
         });
 
         this.setProperties({
           user: response.user,
           users,
-          fingerprints
+          fingerprints,
         });
       });
     } else {
-      return ajax("/admin/plugins/fingerprint").then(response => {
+      return ajax("/admin/plugins/fingerprint").then((response) => {
         const users = {};
-        Object.values(response.users).forEach(user => {
+        Object.values(response.users).forEach((user) => {
           users[user.id] = EmberObject.create(user);
         });
 
-        const fingerprints = response.fingerprints.map(fingerprint => {
+        const fingerprints = response.fingerprints.map((fingerprint) => {
           fingerprint.user_ids = fingerprint.user_ids || [];
-          fingerprint.users = fingerprint.user_ids.map(id => users[id]);
+          fingerprint.users = fingerprint.user_ids.map((id) => users[id]);
           return EmberObject.create(fingerprint);
         });
 
         this.setProperties({
           fingerprints,
-          flagged: response.flagged.map(o => EmberObject.create(o))
+          flagged: response.flagged.map((o) => EmberObject.create(o)),
         });
       });
     }
@@ -93,7 +93,7 @@ export default Controller.extend({
     flag(type, fingerprint, remove) {
       return ajax("/admin/plugins/fingerprint/flag", {
         type: "PUT",
-        data: { type, value: fingerprint.value, remove }
+        data: { type, value: fingerprint.value, remove },
       }).then(() => {
         if (type === "hide") {
           fingerprint.set("hidden", !remove);
@@ -109,11 +109,11 @@ export default Controller.extend({
         data: {
           username: this.username,
           other_username: otherUser.username,
-          remove
-        }
+          remove,
+        },
       }).then(() => {
         otherUser.set("ignored", !remove);
       });
-    }
-  }
+    },
+  },
 });
