@@ -3,7 +3,7 @@
     <h2>{{i18n "fingerprint.latest_matches"}}</h2>
   </div>
   <div class="section-body">
-    {{{i18n "fingerprint.latest_matches_instructions" algorithm="<a href='https://github.com/Valve/fingerprintjs2'>Fingeprintjs2</a>"}}}
+    {{html-safe (i18n "fingerprint.latest_matches_instructions" algorithm="<a href='https://github.com/Valve/fingerprintjs2'>Fingeprintjs2</a>")}}
 
     {{#if fingerprints.length}}
       <table>
@@ -43,21 +43,21 @@
                 </td>
                 <td>
                   {{#if fingerprint.hidden}}
-                    <a {{action flag "hide" fingerprint "yes"}}>{{d-icon "far-eye"}} {{i18n "js.fingerprint.unhide"}}</a>
+                    <a href {{action flag "hide" fingerprint "yes"}}>{{d-icon "far-eye"}} {{i18n "js.fingerprint.unhide"}}</a>
                   {{else}}
-                    <a {{action flag "hide" fingerprint}}>{{d-icon "far-eye-slash"}} {{i18n "js.fingerprint.hide"}}</a>
+                    <a href {{action flag "hide" fingerprint}}>{{d-icon "far-eye-slash"}} {{i18n "js.fingerprint.hide"}}</a>
                   {{/if}}
                 </td>
                 <td>
                   {{#if fingerprint.silenced}}
-                    <a {{action flag "silence" fingerprint "yes"}}>{{d-icon "microphone"}} {{i18n "js.fingerprint.unsilence"}}</a>
+                    <a href {{action flag "silence" fingerprint "yes"}}>{{d-icon "microphone"}} {{i18n "js.fingerprint.unsilence"}}</a>
                   {{else}}
-                    <a class="silence" {{action flag "silence" fingerprint}}>{{d-icon "microphone-slash"}} {{i18n "js.fingerprint.silence"}}</a>
+                    <a href class="silence" {{action flag "silence" fingerprint}}>{{d-icon "microphone-slash"}} {{i18n "js.fingerprint.silence"}}</a>
                   {{/if}}
                 </td>
                 <td>
                   {{#if fingerprint.data}}
-                    <a {{action showFingerprintData fingerprint.data}}>{{d-icon "info"}} {{i18n "js.fingerprint.details"}}</a>
+                    <a href {{action showFingerprintData fingerprint.data}}>{{d-icon "info"}} {{i18n "js.fingerprint.details"}}</a>
                   {{/if}}
                 </td>
               </tr>
