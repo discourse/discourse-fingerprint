@@ -11,7 +11,7 @@ registerHelper("not", ([a]) => !a);
 export default Controller.extend({
   queryParams: ["username"],
 
-  username: "",
+  username: null,
 
   user: null,
   matches: [],
@@ -77,8 +77,9 @@ export default Controller.extend({
   },
 
   actions: {
-    onChange() {
-      return this.update(this.username);
+    updateUsername(selected) {
+      this.set("username", selected.firstObject);
+      this.update(selected.firstObject);
     },
 
     viewReportForUser(user) {
