@@ -1,11 +1,13 @@
 {{#d-modal-body title="fingerprint.details"}}
   <table class="fingerprint">
-    {{#each-in data as |key value|}}
-      <tr>
-        <td class="key">{{key}}</td>
-        <td class="value">{{value}}</td>
-      </tr>
-    {{/each-in}}
+    <tbody>
+      {{#each-in data as |key value|}}
+        <tr>
+          <td class="key">{{key}}</td>
+          <td class="value">{{value}}</td>
+        </tr>
+      {{/each-in}}
+    </tbody>
   </table>
 {{/d-modal-body}}
 

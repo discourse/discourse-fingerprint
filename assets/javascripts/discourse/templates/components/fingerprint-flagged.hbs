@@ -7,47 +7,51 @@
 
     {{#if flagged.length}}
       <table>
-        <tr>
-          <th>{{i18n "fingerprint.results.hash"}}</th>
-          <th>{{i18n "fingerprint.results.matches"}}</th>
-          <th></th>
-          <th></th>
-          <th></th>
-        </tr>
-        {{#each flagged as |fingerprint flags|}}
+        <thead>
           <tr>
-            <td>
-              <small>
-                {{fingerprint.name}}
-                {{#if fingerprint.is_common}}
-                  <span data-tooltip={{i18n "fingerprint.common_device"}}>{{d-icon "layer-group"}}</span>
-                {{/if}}
-              </small>
-              <br/>
-              {{fingerprint.value}}
-            </td>
-            <td>{{fingerprint.count}}</td>
-            <td>
-              {{#if fingerprint.hidden}}
-                <a {{action flag "hide" fingerprint "yes"}}>{{d-icon "far-eye"}} {{i18n "js.fingerprint.unhide"}}</a>
-              {{else}}
-                <a {{action flag "hide" fingerprint}}>{{d-icon "far-eye-slash"}} {{i18n "js.fingerprint.hide"}}</a>
-              {{/if}}
-            </td>
-            <td>
-              {{#if fingerprint.silenced}}
-                <a {{action flag "silence" fingerprint "yes"}}>{{d-icon "microphone"}} {{i18n "js.fingerprint.unsilence"}}</a>
-              {{else}}
-                <a class="silence" {{action flag "silence" fingerprint}}>{{d-icon "microphone-slash"}} {{i18n "js.fingerprint.silence"}}</a>
-              {{/if}}
-            </td>
-            <td>
-              {{#if fingerprint.data}}
-                <a {{action showFingerprintData fingerprint.data}}>{{d-icon "info"}} {{i18n "js.fingerprint.details"}}</a>
-              {{/if}}
-            </td>
+            <th>{{i18n "fingerprint.results.hash"}}</th>
+            <th>{{i18n "fingerprint.results.matches"}}</th>
+            <th></th>
+            <th></th>
+            <th></th>
           </tr>
-        {{/each}}
+        </thead>
+        <tbody>
+          {{#each flagged as |fingerprint flags|}}
+            <tr>
+              <td>
+                <small>
+                  {{fingerprint.name}}
+                  {{#if fingerprint.is_common}}
+                    <span data-tooltip={{i18n "fingerprint.common_device"}}>{{d-icon "layer-group"}}</span>
+                  {{/if}}
+                </small>
+                <br>
+                {{fingerprint.value}}
+              </td>
+              <td>{{fingerprint.count}}</td>
+              <td>
+                {{#if fingerprint.hidden}}
+                  <a {{action flag "hide" fingerprint "yes"}}>{{d-icon "far-eye"}} {{i18n "js.fingerprint.unhide"}}</a>
+                {{else}}
+                  <a {{action flag "hide" fingerprint}}>{{d-icon "far-eye-slash"}} {{i18n "js.fingerprint.hide"}}</a>
+                {{/if}}
+              </td>
+              <td>
+                {{#if fingerprint.silenced}}
+                  <a {{action flag "silence" fingerprint "yes"}}>{{d-icon "microphone"}} {{i18n "js.fingerprint.unsilence"}}</a>
+                {{else}}
+                  <a class="silence" {{action flag "silence" fingerprint}}>{{d-icon "microphone-slash"}} {{i18n "js.fingerprint.silence"}}</a>
+                {{/if}}
+              </td>
+              <td>
+                {{#if fingerprint.data}}
+                  <a {{action showFingerprintData fingerprint.data}}>{{d-icon "info"}} {{i18n "js.fingerprint.details"}}</a>
+                {{/if}}
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
       </table>
     {{else}}
       {{i18n "fingerprint.flagged_not_found"}}

@@ -4,14 +4,14 @@
       <div class="section-title">
         <h2>{{i18n "fingerprint.title"}}</h2>
       </div>
+
       <div class="section-body">
-        {{email-group-user-chooser
-          value=username
-          onChange=(action "updateUsername")
-          options=(hash
-            maximum=1
-            filterPlaceholder="user.username.title"
-          )
+        {{user-selector
+          single=true
+          usernames=username
+          onChangeCallback=(action "onChange")
+          placeholderKey="user.username.title"
+          canReceiveUpdates="true"
         }}
       </div>
     </div>
@@ -19,23 +19,25 @@
 
   {{#if showReport}}
     {{fingerprint-user-report
-        user=user
-        users=users
-        fingerprints=fingerprints
-        ignore=(action "ignore")
-        flag=(action "flag")
-        showFingerprintData=(action "showFingerprintData")}}
+      user=user
+      users=users
+      fingerprints=fingerprints
+      ignore=(action "ignore")
+      flag=(action "flag")
+      showFingerprintData=(action "showFingerprintData")
+    }}
   {{else}}
     {{fingerprint-latest-matches
-        fingerprints=fingerprints
-        viewReportForUser=(action "viewReportForUser")
-        flag=(action "flag")
-        showFingerprintData=(action "showFingerprintData")}}
+      fingerprints=fingerprints
+      viewReportForUser=(action "viewReportForUser")
+      flag=(action "flag")
+      showFingerprintData=(action "showFingerprintData")
+    }}
 
     {{fingerprint-flagged
-        flagged=flagged
-        flag=(action "flag")
-        showFingerprintData=(action "showFingerprintData")}}
+      flagged=flagged
+      flag=(action "flag")
+      showFingerprintData=(action "showFingerprintData")
+    }}
   {{/if}}
-
 </div>
