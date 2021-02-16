@@ -13,27 +13,31 @@
       <p>{{i18n "fingerprint.matches_found" count=usersArray.length}}</p>
 
       <table>
-        <tr>
-          <th>{{i18n "fingerprint.results.matching_user"}}</th>
-          <th></th>
-        </tr>
-        {{#each usersArray as |user|}}
+        <thead>
           <tr>
-            <td>
-              {{#user-link user=user}}
-                {{avatar user imageSize="small"}}
-                {{user.username}}
-              {{/user-link}}
-            </td>
-            <td>
-              {{#if user.ignored}}
-                <a {{action ignore user "yes"}}>{{d-icon "user"}} {{i18n "js.fingerprint.unignore"}}</a>
-              {{else}}
-                <a {{action ignore user}}>{{d-icon "user-slash"}} {{i18n "js.fingerprint.ignore"}}</a>
-              {{/if}}
-            </td>
+            <th>{{i18n "fingerprint.results.matching_user"}}</th>
+            <th></th>
           </tr>
-        {{/each}}
+        </thead>
+        <tbody>
+          {{#each usersArray as |user|}}
+            <tr>
+              <td>
+                {{#user-link user=user}}
+                  {{avatar user imageSize="small"}}
+                  {{user.username}}
+                {{/user-link}}
+              </td>
+              <td>
+                {{#if user.ignored}}
+                  <a href {{action ignore user "yes"}}>{{d-icon "user"}} {{i18n "js.fingerprint.unignore"}}</a>
+                {{else}}
+                  <a href {{action ignore user}}>{{d-icon "user-slash"}} {{i18n "js.fingerprint.ignore"}}</a>
+                {{/if}}
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
       </table>
     {{else}}
       {{i18n "fingerprint.matches_not_found"}}
@@ -48,57 +52,61 @@
   <div class="section-body">
     {{#if fingerprints.length}}
       <table>
-        <tr>
-          <th></th>
-          <th>{{i18n "fingerprint.results.hash"}}</th>
-          <th>{{i18n "fingerprint.results.first_seen"}}</th>
-          <th>{{i18n "fingerprint.results.last_seen"}}</th>
-          <th>{{i18n "fingerprint.results.matches"}}</th>
-          <th></th>
-        </tr>
-        {{#each fingerprints as |fingerprint|}}
-        <tr>
-          <td>{{d-icon fingerprint.device_type}}</td>
-          <td>
-              <small>
-                {{fingerprint.name}}
-                {{#if fingerprint.is_common}}
-                  <span data-tooltip={{i18n "fingerprint.common_device"}}>{{d-icon "layer-group"}}</span>
+        <thead>
+          <tr>
+            <th></th>
+            <th>{{i18n "fingerprint.results.hash"}}</th>
+            <th>{{i18n "fingerprint.results.first_seen"}}</th>
+            <th>{{i18n "fingerprint.results.last_seen"}}</th>
+            <th>{{i18n "fingerprint.results.matches"}}</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each fingerprints as |fingerprint|}}
+            <tr>
+              <td>{{d-icon fingerprint.device_type}}</td>
+              <td>
+                <small>
+                  {{fingerprint.name}}
+                  {{#if fingerprint.is_common}}
+                    <span data-tooltip={{i18n "fingerprint.common_device"}}>{{d-icon "layer-group"}}</span>
+                  {{/if}}
+                </small>
+                <br>
+                {{fingerprint.value}}
+              </td>
+              <td>{{format-date fingerprint.created_at}}</td>
+              <td>{{format-date fingerprint.updated_at}}</td>
+              <td>
+                <p>
+                  {{#each fingerprint.users as |u|}}
+                    {{#unless u.ignored}}
+                      {{#user-link user=u}}
+                        {{avatar u imageSize="small"}}
+                      {{/user-link}}
+                    {{/unless}}
+                  {{/each}}
+                </p>
+              </td>
+              <td class="details-col">
+                {{#if fingerprint.hidden}}
+                  <a href {{action flag "hide" fingerprint "yes"}} title={{i18n "js.fingerprint.unhide"}}>{{d-icon "far-eye"}}</a>
+                {{else}}
+                  <a href {{action flag "hide" fingerprint}} title={{i18n "js.fingerprint.hide"}}>{{d-icon "eye-slash"}}</a>
                 {{/if}}
-              </small>
-              <br/>
-              {{fingerprint.value}}
-          </td>
-          <td>{{format-date fingerprint.created_at}}</td>
-          <td>{{format-date fingerprint.updated_at}}</td>
-          <td>
-            <p>
-              {{#each fingerprint.users as |u|}}
-                {{#unless u.ignored}}
-                  {{#user-link user=u}}
-                    {{avatar u imageSize="small"}}
-                  {{/user-link}}
-                {{/unless}}
-              {{/each}}
-            </p>
-          </td>
-          <td class="details-col">
-            {{#if fingerprint.hidden}}
-              <a {{action flag "hide" fingerprint "yes"}} title={{i18n "js.fingerprint.unhide"}}>{{d-icon "far-eye"}}</a>
-            {{else}}
-              <a {{action flag "hide" fingerprint}} title={{i18n "js.fingerprint.hide"}}>{{d-icon "eye-slash"}}</a>
-            {{/if}}
-            {{#if fingerprint.silenced}}
-              <a {{action flag "silence" fingerprint "yes"}} title={{i18n "js.fingerprint.unsilence"}}>{{d-icon "microphone"}}</a>
-            {{else}}
-              <a class="silence" {{action flag "silence" fingerprint}} title={{i18n "js.fingerprint.silence"}}>{{d-icon "microphone-slash"}}</a>
-            {{/if}}
-            {{#if fingerprint.data}}
-              <a {{action showFingerprintData fingerprint.data}} title={{i18n "js.fingerprint.details"}}>{{d-icon "info"}}</a>
-            {{/if}}
-          </td>
-        </tr>
-        {{/each}}
+                {{#if fingerprint.silenced}}
+                  <a href {{action flag "silence" fingerprint "yes"}} title={{i18n "js.fingerprint.unsilence"}}>{{d-icon "microphone"}}</a>
+                {{else}}
+                  <a href class="silence" {{action flag "silence" fingerprint}} title={{i18n "js.fingerprint.silence"}}>{{d-icon "microphone-slash"}}</a>
+                {{/if}}
+                {{#if fingerprint.data}}
+                  <a href {{action showFingerprintData fingerprint.data}} title={{i18n "js.fingerprint.details"}}>{{d-icon "info"}}</a>
+                {{/if}}
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
       </table>
     {{else}}
       {{i18n "fingerprint.none"}}
