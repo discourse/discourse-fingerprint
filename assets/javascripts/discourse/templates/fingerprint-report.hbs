@@ -6,12 +6,13 @@
       </div>
 
       <div class="section-body">
-        {{user-selector
-          single=true
-          usernames=username
-          onChangeCallback=(action "onChange")
-          placeholderKey="user.username.title"
-          canReceiveUpdates="true"
+        {{email-group-user-chooser
+          value=username
+          onChange=(action "updateUsername")
+          options=(hash
+            maximum=1
+            filterPlaceholder="user.username.title"
+          )
         }}
       </div>
     </div>
