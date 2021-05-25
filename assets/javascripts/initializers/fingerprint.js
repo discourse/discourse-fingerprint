@@ -14,18 +14,26 @@ export default {
     // Wait for 3 seconds before fingerprinting user to let the browser use
     // resources for more important tasks (i.e. resource loading, rendering).
     Ember.run.later(() => {
-      loadScript("/plugins/discourse-fingerprint/javascripts/fp2.js").then(
+      loadScript("/plugins/discourse-fingerprint/javascripts/fp.js").then(
         () => {
-          /* global Fingerprint2 */
-          Fingerprint2.get((components) => {
-            const componentsMap = {};
-            components.forEach((e) => (componentsMap[e.key] = e.value));
+          /* global FingerprintJS */
+          FingerprintJS.load()
+            .then((fp) => fp.get())
+            .then((result) => {
+              const resultMap = {};
+              Object.keys(result.components).forEach(
+                (key) => (resultMap[key] = result.components[key].value)
+              );
 
-            ajax("/fingerprint", {
-              type: "POST",
-              data: { data: JSON.stringify(componentsMap) },
+              ajax("/fingerprint", {
+                type: "POST",
+                data: {
+                  visitor_id: result.visitorId,
+                  version: result.version,
+                  data: JSON.stringify(resultMap),
+                },
+              });
             });
-          });
         }
       );
     }, 3000);

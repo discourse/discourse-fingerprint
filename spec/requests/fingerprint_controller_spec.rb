@@ -6,14 +6,22 @@ describe DiscourseFingerprint::FingerprintController do
   let(:user) { Fabricate(:user) }
 
   context '#index' do
-    it 'does not work when not logged in' do
+    it 'saves fingerprints for users' do
+      expect {
+        post '/fingerprint',
+          params: { visitor_id: 'abc', version: '1.0.0', data: { foo: 'bar', audio: 'baz' }.to_json },
+          headers: { 'User-Agent' => 'Discourse' }
+      }.to change { Fingerprint.count }.by(0)
+
+      expect(response.status).to eq(403)
+
       sign_in(user)
 
       expect {
         post '/fingerprint',
-          params: { data: { foo: 'bar', audio: 'baz' }.to_json },
+          params: { visitor_id: 'abc', version: '1.0.0', data: { foo: 'bar', audio: 'baz' }.to_json },
           headers: { 'User-Agent' => 'Discourse' }
-      }.to change { Fingerprint.count }.by(3)
+      }.to change { Fingerprint.count }.by(2)
 
       expect(response.status).to eq(200)
 
@@ -21,7 +29,7 @@ describe DiscourseFingerprint::FingerprintController do
         SiteSetting.fingerprint_cookie = true
 
         post '/fingerprint',
-          params: { data: { foo: 'bar', audio: 'baz' }.to_json },
+          params: { visitor_id: 'abc', version: '1.0.0', data: { foo: 'bar', audio: 'baz' }.to_json },
           headers: { 'User-Agent' => 'Discourse' }
       }.to change { Fingerprint.count }.by(1)
 
@@ -32,7 +40,7 @@ describe DiscourseFingerprint::FingerprintController do
         SiteSetting.fingerprint_ip = true
 
         post '/fingerprint',
-          params: { data: { foo: 'bar', audio: 'baz' }.to_json },
+          params: { visitor_id: 'abc', version: '1.0.0', data: { foo: 'bar', audio: 'baz' }.to_json },
           headers: { 'User-Agent' => 'Discourse' }
       }.to change { Fingerprint.count }.by(1)
 
