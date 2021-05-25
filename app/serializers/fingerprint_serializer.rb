@@ -25,7 +25,7 @@ class FingerprintSerializer < ApplicationSerializer
   end
 
   def include_device_type?
-    data.present?
+    include_data?
   end
 
   def device_type
@@ -34,7 +34,7 @@ class FingerprintSerializer < ApplicationSerializer
   end
 
   def include_is_common?
-    data.present?
+    include_data?
   end
 
   def is_common
