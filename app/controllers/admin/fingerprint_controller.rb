@@ -43,6 +43,7 @@ class DiscourseFingerprint::FingerprintAdminController < Admin::AdminController
     fingerprints = Fingerprint
       .where(user: user)
       .where.not(value: FlaggedFingerprint.select(:value).where(hidden: true))
+      .order(updated_at: :desc)
 
     user_ids = Fingerprint
       .matches
