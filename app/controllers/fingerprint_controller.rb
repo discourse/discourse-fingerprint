@@ -9,6 +9,7 @@ class DiscourseFingerprint::FingerprintController < ApplicationController
   FINGERPRINTED_HEADERS = ['Accept', 'Accept-Charset', 'Accept-Datetime', 'Accept-Encoding', 'Accept-Language', 'User-Agent']
 
   COOKIE_METHOD_NAME = 'cookie'
+  IP_METHOD_NAME = 'ip'
   SCRIPT_METHOD_NAME = 'fingerprintjs2'
 
   def index
@@ -24,26 +25,21 @@ class DiscourseFingerprint::FingerprintController < ApplicationController
     if SiteSetting.fingerprint_ip?
       hashes << (hash = request.remote_ip.to_s)
       info = DiscourseIpInfo.get(request.remote_ip)
-      Fingerprint.create_or_touch!(user: current_user, name: 'IP', value: hash, data: info.presence && JSON.dump(info))
+      Fingerprint.create_or_touch!(user: current_user, name: IP_METHOD_NAME, value: hash, data: info.presence && JSON.dump(info))
     end
 
-    begin
-      data = JSON.parse(params.require(:data))
-    rescue JSON::ParserError
-    end
+    visitor_id = params.require(:visitor_id)
+    version = params.require(:version)
+    data = params.require(:data)
 
-    if data
-      hashes << (hash = Fingerprint.compute_hash(data))
-      Fingerprint.create_or_touch!(user: current_user, name: SCRIPT_METHOD_NAME, value: hash, data: JSON.dump(data))
+    if visitor_id.present? && version.present? && data.present?
+      hashes << (hash = visitor_id)
+      Fingerprint.create_or_touch!(user: current_user, name: SCRIPT_METHOD_NAME, value: hash, data: data)
 
-      # There are browser extensions that can block these fingerprinting
-      # methods and produce weird fingerprints.
-      data = data.reject! { |k, _| ["audio", "canvas", "fonts", "webgl"].include?(k) }
-      hashes << (hash = Fingerprint.compute_hash(data))
-      Fingerprint.create_or_touch!(user: current_user, name: "#{SCRIPT_METHOD_NAME}-", value: hash, data: JSON.dump(data))
+      # Build an additional fingerprint with original hash and browser headers
+      data = { visitor_id: visitor_id, version: params.require(:version) }
+      FINGERPRINTED_HEADERS.each { |h| data[h] = request.headers[h] if request.headers[h].present? }
 
-      # Add request headers to fingerprint data for a better accuracy.
-      FINGERPRINTED_HEADERS.each { |h| data[h] = request.headers[h] }
       hashes << (hash = Fingerprint.compute_hash(data))
       Fingerprint.create_or_touch!(user: current_user, name: "#{SCRIPT_METHOD_NAME}+", value: hash, data: JSON.dump(data))
     end
