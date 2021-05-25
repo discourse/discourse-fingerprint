@@ -48,7 +48,7 @@ class FlaggedFingerprintSerializer < ApplicationSerializer
   end
 
   def include_is_common?
-    data.present?
+    include_data?
   end
 
   def is_common

@@ -88,7 +88,14 @@ export default Controller.extend({
     },
 
     showFingerprintData(data) {
-      showModal("fingerprint-details").setProperties({ data });
+      const dataStr = {};
+      Object.keys(data).forEach((key) => {
+        dataStr[key] =
+          data[key] !== null && typeof data[key] === "object"
+            ? JSON.stringify(data[key])
+            : data[key];
+      });
+      showModal("fingerprint-details").setProperties({ data: dataStr });
     },
 
     flag(type, fingerprint, remove) {
