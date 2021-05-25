@@ -1,9 +1,9 @@
 import Controller from "@ember/controller";
 import EmberObject from "@ember/object";
 import { registerHelper } from "discourse-common/lib/helpers";
+import discourseComputed from "discourse-common/utils/decorators";
 import { ajax } from "discourse/lib/ajax";
 import showModal from "discourse/lib/show-modal";
-import computed from "ember-addons/ember-computed-decorators";
 
 registerHelper("and", ([a, b]) => a && b);
 registerHelper("not", ([a]) => !a);
@@ -17,7 +17,7 @@ export default Controller.extend({
   matches: [],
   fingerprints: [],
 
-  @computed("user", "username")
+  @discourseComputed("user", "username")
   showReport(user, username) {
     return user && username;
   },
