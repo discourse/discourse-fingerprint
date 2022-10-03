@@ -5,13 +5,13 @@ require 'rails_helper'
 describe DiscourseFingerprint::FingerprintController do
   let(:user) { Fabricate(:user) }
 
-  context '#index' do
+  describe '#index' do
     it 'saves fingerprints for users' do
       expect {
         post '/fingerprint',
           params: { visitor_id: 'abc', version: '1.0.0', data: { foo: 'bar', audio: 'baz' }.to_json },
           headers: { 'User-Agent' => 'Discourse' }
-      }.to change { Fingerprint.count }.by(0)
+      }.not_to change { Fingerprint.count }
 
       expect(response.status).to eq(403)
 
