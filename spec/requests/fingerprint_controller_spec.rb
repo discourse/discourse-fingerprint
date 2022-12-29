@@ -1,16 +1,22 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe DiscourseFingerprint::FingerprintController do
   let(:user) { Fabricate(:user) }
 
-  describe '#index' do
-    it 'saves fingerprints for users' do
+  describe "#index" do
+    it "saves fingerprints for users" do
       expect {
-        post '/fingerprint',
-          params: { visitor_id: 'abc', version: '1.0.0', data: { foo: 'bar', audio: 'baz' }.to_json },
-          headers: { 'User-Agent' => 'Discourse' }
+        post "/fingerprint",
+             params: {
+               visitor_id: "abc",
+               version: "1.0.0",
+               data: { foo: "bar", audio: "baz" }.to_json,
+             },
+             headers: {
+               "User-Agent" => "Discourse",
+             }
       }.not_to change { Fingerprint.count }
 
       expect(response.status).to eq(403)
@@ -18,9 +24,15 @@ describe DiscourseFingerprint::FingerprintController do
       sign_in(user)
 
       expect {
-        post '/fingerprint',
-          params: { visitor_id: 'abc', version: '1.0.0', data: { foo: 'bar', audio: 'baz' }.to_json },
-          headers: { 'User-Agent' => 'Discourse' }
+        post "/fingerprint",
+             params: {
+               visitor_id: "abc",
+               version: "1.0.0",
+               data: { foo: "bar", audio: "baz" }.to_json,
+             },
+             headers: {
+               "User-Agent" => "Discourse",
+             }
       }.to change { Fingerprint.count }.by(2)
 
       expect(response.status).to eq(200)
@@ -28,20 +40,32 @@ describe DiscourseFingerprint::FingerprintController do
       expect {
         SiteSetting.fingerprint_cookie = true
 
-        post '/fingerprint',
-          params: { visitor_id: 'abc', version: '1.0.0', data: { foo: 'bar', audio: 'baz' }.to_json },
-          headers: { 'User-Agent' => 'Discourse' }
+        post "/fingerprint",
+             params: {
+               visitor_id: "abc",
+               version: "1.0.0",
+               data: { foo: "bar", audio: "baz" }.to_json,
+             },
+             headers: {
+               "User-Agent" => "Discourse",
+             }
       }.to change { Fingerprint.count }.by(1)
 
       expect(response.status).to eq(200)
-      expect(response.headers['Set-Cookie']).to start_with('fp=')
+      expect(response.headers["Set-Cookie"]).to start_with("fp=")
 
       expect {
         SiteSetting.fingerprint_ip = true
 
-        post '/fingerprint',
-          params: { visitor_id: 'abc', version: '1.0.0', data: { foo: 'bar', audio: 'baz' }.to_json },
-          headers: { 'User-Agent' => 'Discourse' }
+        post "/fingerprint",
+             params: {
+               visitor_id: "abc",
+               version: "1.0.0",
+               data: { foo: "bar", audio: "baz" }.to_json,
+             },
+             headers: {
+               "User-Agent" => "Discourse",
+             }
       }.to change { Fingerprint.count }.by(1)
 
       expect(response.status).to eq(200)

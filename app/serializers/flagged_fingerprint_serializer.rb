@@ -1,18 +1,10 @@
 # frozen_string_literal: true
 
 class FlaggedFingerprintSerializer < ApplicationSerializer
-  attributes :name,
-             :value,
-             :hidden,
-             :silenced,
-             :data,
-             :count,
-             :is_common
+  attributes :name, :value, :hidden, :silenced, :data, :count, :is_common
 
   def include_name?
-    scope.present? &&
-    scope[:fingerprints].present? &&
-    scope[:fingerprints][value].present?
+    scope.present? && scope[:fingerprints].present? && scope[:fingerprints][value].present?
   end
 
   def name
@@ -20,9 +12,7 @@ class FlaggedFingerprintSerializer < ApplicationSerializer
   end
 
   def include_data?
-    scope.present? &&
-    scope[:fingerprints].present? &&
-    scope[:fingerprints][value].present?
+    scope.present? && scope[:fingerprints].present? && scope[:fingerprints][value].present?
   end
 
   def data
@@ -38,9 +28,7 @@ class FlaggedFingerprintSerializer < ApplicationSerializer
   end
 
   def include_count?
-    scope.present? &&
-    scope[:fingerprints].present? &&
-    scope[:fingerprints][value].present?
+    scope.present? && scope[:fingerprints].present? && scope[:fingerprints][value].present?
   end
 
   def count

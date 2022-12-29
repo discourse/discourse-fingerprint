@@ -29,8 +29,8 @@ class FingerprintSerializer < ApplicationSerializer
   end
 
   def device_type
-    user_agent = data['User-Agent'] || data['user_agent']
-    MobileDetection.mobile_device?(user_agent) ? 'mobile' : 'desktop'
+    user_agent = data["User-Agent"] || data["user_agent"]
+    MobileDetection.mobile_device?(user_agent) ? "mobile" : "desktop"
   end
 
   def include_is_common?
