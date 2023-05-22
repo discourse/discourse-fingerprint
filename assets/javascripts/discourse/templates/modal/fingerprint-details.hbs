@@ -1,4 +1,4 @@
-{{#d-modal-body title="fingerprint.details"}}
+<DModalBody @title="fingerprint.details">
   <table class="fingerprint">
     <tbody>
       {{#each-in data as |key value|}}
@@ -9,7 +9,7 @@
       {{/each-in}}
     </tbody>
   </table>
-{{/d-modal-body}}
+</DModalBody>
 
 <div class="modal-footer">
   {{d-modal-cancel close=(action "closeModal")}}
