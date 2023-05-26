@@ -6,36 +6,36 @@
       </div>
 
       <div class="section-body">
-        {{email-group-user-chooser
-          value=username
-          onChange=(action "updateUsername")
-          options=(hash maximum=1 filterPlaceholder="user.username.title")
-        }}
+        <EmailGroupUserChooser
+          @value={{username}}
+          @onChange={{action "updateUsername"}}
+          @options={{hash maximum=1 filterPlaceholder="user.username.title"}}
+        />
       </div>
     </div>
   </div>
 
   {{#if showReport}}
-    {{fingerprint-user-report
-      user=user
-      users=users
-      fingerprints=fingerprints
-      ignore=(action "ignore")
-      flag=(action "flag")
-      showFingerprintData=(action "showFingerprintData")
-    }}
+    <FingerprintUserReport
+      @user={{user}}
+      @users={{users}}
+      @fingerprints={{fingerprints}}
+      @ignore={{action "ignore"}}
+      @flag={{action "flag"}}
+      @showFingerprintData={{action "showFingerprintData"}}
+    />
   {{else}}
-    {{fingerprint-latest-matches
-      fingerprints=fingerprints
-      viewReportForUser=(action "viewReportForUser")
-      flag=(action "flag")
-      showFingerprintData=(action "showFingerprintData")
-    }}
+    <FingerprintLatestMatches
+      @fingerprints={{fingerprints}}
+      @viewReportForUser={{action "viewReportForUser"}}
+      @flag={{action "flag"}}
+      @showFingerprintData={{action "showFingerprintData"}}
+    />
 
-    {{fingerprint-flagged
-      flagged=flagged
-      flag=(action "flag")
-      showFingerprintData=(action "showFingerprintData")
-    }}
+    <FingerprintFlagged
+      @flagged={{flagged}}
+      @flag={{action "flag"}}
+      @showFingerprintData={{action "showFingerprintData"}}
+    />
   {{/if}}
 </div>
