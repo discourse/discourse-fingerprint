@@ -2,10 +2,10 @@
   <div class="section-title">
     <h2>
       {{i18n "fingerprint.matches_for"}}
-      {{#user-link user=user}}
+      <UserLink @user={{user}}>
         {{avatar user imageSize="medium"}}
         {{user.username}}
-      {{/user-link}}
+      </UserLink>
     </h2>
   </div>
   <div class="section-body">
@@ -23,16 +23,18 @@
           {{#each usersArray as |user|}}
             <tr>
               <td>
-                {{#user-link user=user}}
+                <UserLink @user={{user}}>
                   {{avatar user imageSize="small"}}
                   {{user.username}}
-                {{/user-link}}
+                </UserLink>
               </td>
               <td>
                 {{#if user.ignored}}
-                  <a href {{action ignore user "yes"}}>{{d-icon "user"}} {{i18n "js.fingerprint.unignore"}}</a>
+                  <a href {{action ignore user "yes"}}>{{d-icon "user"}}
+                    {{i18n "js.fingerprint.unignore"}}</a>
                 {{else}}
-                  <a href {{action ignore user}}>{{d-icon "user-slash"}} {{i18n "js.fingerprint.ignore"}}</a>
+                  <a href {{action ignore user}}>{{d-icon "user-slash"}}
+                    {{i18n "js.fingerprint.ignore"}}</a>
                 {{/if}}
               </td>
             </tr>
@@ -70,10 +72,12 @@
                 <small>
                   {{fingerprint.name}}
                   {{#if fingerprint.is_common}}
-                    <span data-tooltip={{i18n "fingerprint.common_device"}}>{{d-icon "layer-group"}}</span>
+                    <span
+                      data-tooltip={{i18n "fingerprint.common_device"}}
+                    >{{d-icon "layer-group"}}</span>
                   {{/if}}
                 </small>
-                <br>
+                <br />
                 {{fingerprint.value}}
               </td>
               <td>{{format-date fingerprint.created_at}}</td>
@@ -82,26 +86,47 @@
                 <p>
                   {{#each fingerprint.users as |u|}}
                     {{#unless u.ignored}}
-                      {{#user-link user=u}}
+                      <UserLink @user={{u}}>
                         {{avatar u imageSize="small"}}
-                      {{/user-link}}
+                      </UserLink>
                     {{/unless}}
                   {{/each}}
                 </p>
               </td>
               <td class="details-col">
                 {{#if fingerprint.hidden}}
-                  <a href {{action flag "hide" fingerprint "yes"}} title={{i18n "js.fingerprint.unhide"}}>{{d-icon "far-eye"}}</a>
+                  <a
+                    href
+                    {{action flag "hide" fingerprint "yes"}}
+                    title={{i18n "js.fingerprint.unhide"}}
+                  >{{d-icon "far-eye"}}</a>
                 {{else}}
-                  <a href {{action flag "hide" fingerprint}} title={{i18n "js.fingerprint.hide"}}>{{d-icon "eye-slash"}}</a>
+                  <a
+                    href
+                    {{action flag "hide" fingerprint}}
+                    title={{i18n "js.fingerprint.hide"}}
+                  >{{d-icon "eye-slash"}}</a>
                 {{/if}}
                 {{#if fingerprint.silenced}}
-                  <a href {{action flag "silence" fingerprint "yes"}} title={{i18n "js.fingerprint.unsilence"}}>{{d-icon "microphone"}}</a>
+                  <a
+                    href
+                    {{action flag "silence" fingerprint "yes"}}
+                    title={{i18n "js.fingerprint.unsilence"}}
+                  >{{d-icon "microphone"}}</a>
                 {{else}}
-                  <a href class="silence" {{action flag "silence" fingerprint}} title={{i18n "js.fingerprint.silence"}}>{{d-icon "microphone-slash"}}</a>
+                  <a
+                    href
+                    class="silence"
+                    {{action flag "silence" fingerprint}}
+                    title={{i18n "js.fingerprint.silence"}}
+                  >{{d-icon "microphone-slash"}}</a>
                 {{/if}}
                 {{#if fingerprint.data}}
-                  <a href {{action showFingerprintData fingerprint.data}} title={{i18n "js.fingerprint.details"}}>{{d-icon "info"}}</a>
+                  <a
+                    href
+                    {{action showFingerprintData fingerprint.data}}
+                    title={{i18n "js.fingerprint.details"}}
+                  >{{d-icon "info"}}</a>
                 {{/if}}
               </td>
             </tr>

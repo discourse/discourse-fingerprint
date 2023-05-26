@@ -3,7 +3,12 @@
     <h2>{{i18n "fingerprint.latest_matches"}}</h2>
   </div>
   <div class="section-body">
-    {{html-safe (i18n "fingerprint.latest_matches_instructions" algorithm="<a href='https://github.com/Valve/fingerprintjs2'>Fingeprintjs2</a>")}}
+    {{html-safe
+      (i18n
+        "fingerprint.latest_matches_instructions"
+        algorithm="<a href='https://github.com/Valve/fingerprintjs2'>Fingeprintjs2</a>"
+      )
+    }}
 
     {{#if fingerprints.length}}
       <table>
@@ -14,7 +19,9 @@
             <th>{{i18n "fingerprint.results.matches"}}</th>
             <th colspan="3">
               {{input type="checkbox" id="hide-common" checked=hideCommon}}
-              <label for="hide-common">{{i18n "fingerprint.hide_common"}}</label>
+              <label for="hide-common">{{i18n
+                  "fingerprint.hide_common"
+                }}</label>
             </th>
           </tr>
         </thead>
@@ -27,37 +34,56 @@
                   <small>
                     {{fingerprint.name}}
                     {{#if fingerprint.is_common}}
-                      <span data-tooltip={{i18n "fingerprint.common_device"}}>{{d-icon "layer-group"}}</span>
+                      <span
+                        data-tooltip={{i18n "fingerprint.common_device"}}
+                      >{{d-icon "layer-group"}}</span>
                     {{/if}}
                   </small>
-                  <br>
+                  <br />
                   {{fingerprint.value}}
                 </td>
                 <td>
                   <small>{{fingerprint.user_ids.length}}</small>
                   {{#each fingerprint.users as |u|}}
-                    {{#user-link user=u}}
+                    <UserLink @user={{u}}>
                       {{avatar u imageSize="small"}}
-                    {{/user-link}}
+                    </UserLink>
                   {{/each}}
                 </td>
                 <td>
                   {{#if fingerprint.hidden}}
-                    <a href {{action flag "hide" fingerprint "yes"}}>{{d-icon "far-eye"}} {{i18n "js.fingerprint.unhide"}}</a>
+                    <a href {{action flag "hide" fingerprint "yes"}}>{{d-icon
+                        "far-eye"
+                      }}
+                      {{i18n "js.fingerprint.unhide"}}</a>
                   {{else}}
-                    <a href {{action flag "hide" fingerprint}}>{{d-icon "far-eye-slash"}} {{i18n "js.fingerprint.hide"}}</a>
+                    <a href {{action flag "hide" fingerprint}}>{{d-icon
+                        "far-eye-slash"
+                      }}
+                      {{i18n "js.fingerprint.hide"}}</a>
                   {{/if}}
                 </td>
                 <td>
                   {{#if fingerprint.silenced}}
-                    <a href {{action flag "silence" fingerprint "yes"}}>{{d-icon "microphone"}} {{i18n "js.fingerprint.unsilence"}}</a>
+                    <a href {{action flag "silence" fingerprint "yes"}}>{{d-icon
+                        "microphone"
+                      }}
+                      {{i18n "js.fingerprint.unsilence"}}</a>
                   {{else}}
-                    <a href class="silence" {{action flag "silence" fingerprint}}>{{d-icon "microphone-slash"}} {{i18n "js.fingerprint.silence"}}</a>
+                    <a
+                      href
+                      class="silence"
+                      {{action flag "silence" fingerprint}}
+                    >{{d-icon "microphone-slash"}}
+                      {{i18n "js.fingerprint.silence"}}</a>
                   {{/if}}
                 </td>
                 <td>
                   {{#if fingerprint.data}}
-                    <a href {{action showFingerprintData fingerprint.data}}>{{d-icon "info"}} {{i18n "js.fingerprint.details"}}</a>
+                    <a
+                      href
+                      {{action showFingerprintData fingerprint.data}}
+                    >{{d-icon "info"}} {{i18n "js.fingerprint.details"}}</a>
                   {{/if}}
                 </td>
               </tr>
