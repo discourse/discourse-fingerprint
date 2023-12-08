@@ -3,7 +3,8 @@ import EmberObject from "@ember/object";
 import { registerHelper } from "discourse-common/lib/helpers";
 import discourseComputed from "discourse-common/utils/decorators";
 import { ajax } from "discourse/lib/ajax";
-import showModal from "discourse/lib/show-modal";
+import { inject as service } from "@ember/service";
+import FingerprintDetails from "../components/modal/fingerprint-details";
 
 registerHelper("and", ([a, b]) => a && b);
 registerHelper("not", ([a]) => !a);
@@ -11,8 +12,9 @@ registerHelper("not", ([a]) => !a);
 export default Controller.extend({
   queryParams: ["username"],
 
-  username: null,
+  modal: service(),
 
+  username: null,
   user: null,
   matches: [],
   fingerprints: [],
@@ -95,7 +97,7 @@ export default Controller.extend({
             ? JSON.stringify(data[key])
             : data[key];
       });
-      showModal("fingerprint-details").setProperties({ data: dataStr });
+      this.modal.show(FingerprintDetails, { model: { data: dataStr } });
     },
 
     flag(type, fingerprint, remove) {
