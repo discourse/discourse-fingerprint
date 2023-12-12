@@ -1,3 +1,4 @@
+import { later } from "@ember/runloop";
 import { ajax } from "discourse/lib/ajax";
 import loadScript from "discourse/lib/load-script";
 
@@ -13,7 +14,7 @@ export default {
 
     // Wait for 3 seconds before fingerprinting user to let the browser use
     // resources for more important tasks (i.e. resource loading, rendering).
-    Ember.run.later(() => {
+    later(() => {
       loadScript("/plugins/discourse-fingerprint/javascripts/fp.js").then(
         () => {
           /* global FingerprintJS */
