@@ -5,7 +5,6 @@
 # version: 2.0
 # authors: Dan Ungureanu
 # url: https://github.com/udan11/discourse-fingerprint.git
-# transpile_js: true
 
 enabled_site_setting :fingerprint_enabled
 

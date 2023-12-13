@@ -19,7 +19,7 @@ class FingerprintSerializer < ApplicationSerializer
   def data
     if object.data
       data = JSON.parse(object.data)
-      return data if data.is_a?(Hash) && data.keys.length > 0
+      data if data.is_a?(Hash) && data.keys.length > 0
     end
   rescue JSON::ParserError
   end
