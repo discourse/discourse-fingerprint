@@ -6,8 +6,8 @@ export default {
   name: "fingerprint",
 
   initialize(container) {
-    const siteSettings = container.lookup("site-settings:main");
-    const user = container.lookup("current-user:main");
+    const siteSettings = container.lookup("service:site-settings");
+    const user = container.lookup("service:current-user");
     if (!siteSettings.fingerprint_enabled || !user) {
       return;
     }
