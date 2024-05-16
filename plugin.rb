@@ -52,13 +52,13 @@ after_initialize do
     end
   end
 
-  load File.expand_path("../app/controllers/admin/fingerprint_controller.rb", __FILE__)
-  load File.expand_path("../app/controllers/fingerprint_controller.rb", __FILE__)
-  load File.expand_path("../app/jobs/scheduled/fingerprint_consistency.rb", __FILE__)
-  load File.expand_path("../app/models/fingerprint.rb", __FILE__)
-  load File.expand_path("../app/models/flagged_fingerprint.rb", __FILE__)
-  load File.expand_path("../app/serializers/fingerprint_serializer.rb", __FILE__)
-  load File.expand_path("../app/serializers/flagged_fingerprint_serializer.rb", __FILE__)
+  require_relative "app/controllers/admin/fingerprint_controller"
+  require_relative "app/controllers/fingerprint_controller"
+  require_relative "app/jobs/scheduled/fingerprint_consistency"
+  require_relative "app/models/fingerprint"
+  require_relative "app/models/flagged_fingerprint"
+  require_relative "app/serializers/fingerprint_serializer"
+  require_relative "app/serializers/flagged_fingerprint_serializer"
 
   class DiscourseFingerprint::Engine < Rails::Engine
     engine_name DiscourseFingerprint::PLUGIN_NAME
