@@ -1,4 +1,4 @@
-# discourse-fingerprint [![Build Status](https://travis-ci.org/discourse/discourse-fingerprint.svg?branch=master)](https://travis-ci.org/discourse/discourse-fingerprint)
+# discourse-fingerprint
 
 Discourse Fingerprint comes as a tool to community managers in their combat with [internet trolls](https://en.wikipedia.org/wiki/Internet_troll). It works by computing a unique identifier (a fingerprint) of each registered user, by taking into consideration over 20 browser characteristics such as user agent, screen resolution, timezone, device memory, etc.
 
