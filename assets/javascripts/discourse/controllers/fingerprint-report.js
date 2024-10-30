@@ -2,12 +2,8 @@ import Controller from "@ember/controller";
 import EmberObject from "@ember/object";
 import { inject as service } from "@ember/service";
 import { ajax } from "discourse/lib/ajax";
-import { registerHelper } from "discourse-common/lib/helpers";
 import discourseComputed from "discourse-common/utils/decorators";
 import FingerprintDetails from "../components/modal/fingerprint-details";
-
-registerHelper("and", ([a, b]) => a && b);
-registerHelper("not", ([a]) => !a);
 
 export default Controller.extend({
   queryParams: ["username"],
