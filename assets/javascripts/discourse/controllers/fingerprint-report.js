@@ -1,6 +1,6 @@
 import Controller from "@ember/controller";
 import EmberObject from "@ember/object";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import { ajax } from "discourse/lib/ajax";
 import discourseComputed from "discourse-common/utils/decorators";
 import FingerprintDetails from "../components/modal/fingerprint-details";
