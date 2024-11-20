@@ -2,15 +2,15 @@
   <div class="section-title">
     <h2>
       {{i18n "fingerprint.matches_for"}}
-      <UserLink @user={{user}}>
-        {{avatar user imageSize="medium"}}
-        {{user.username}}
+      <UserLink @user={{this.user}}>
+        {{avatar this.user imageSize="medium"}}
+        {{this.user.username}}
       </UserLink>
     </h2>
   </div>
   <div class="section-body">
-    {{#if usersArray.length}}
-      <p>{{i18n "fingerprint.matches_found" count=usersArray.length}}</p>
+    {{#if this.usersArray.length}}
+      <p>{{i18n "fingerprint.matches_found" count=this.usersArray.length}}</p>
 
       <table>
         <thead>
@@ -20,7 +20,7 @@
           </tr>
         </thead>
         <tbody>
-          {{#each usersArray as |user|}}
+          {{#each this.usersArray as |user|}}
             <tr>
               <td>
                 <UserLink @user={{user}}>
@@ -30,10 +30,10 @@
               </td>
               <td>
                 {{#if user.ignored}}
-                  <a href {{action ignore user "yes"}}>{{d-icon "user"}}
+                  <a href {{action this.ignore user "yes"}}>{{d-icon "user"}}
                     {{i18n "js.fingerprint.unignore"}}</a>
                 {{else}}
-                  <a href {{action ignore user}}>{{d-icon "user-slash"}}
+                  <a href {{action this.ignore user}}>{{d-icon "user-slash"}}
                     {{i18n "js.fingerprint.ignore"}}</a>
                 {{/if}}
               </td>
@@ -52,7 +52,7 @@
     <h2>{{i18n "fingerprint.details"}}</h2>
   </div>
   <div class="section-body">
-    {{#if fingerprints.length}}
+    {{#if this.fingerprints.length}}
       <table>
         <thead>
           <tr>
@@ -65,7 +65,7 @@
           </tr>
         </thead>
         <tbody>
-          {{#each fingerprints as |fingerprint|}}
+          {{#each this.fingerprints as |fingerprint|}}
             <tr>
               <td>{{d-icon fingerprint.device_type}}</td>
               <td>
@@ -97,34 +97,34 @@
                 {{#if fingerprint.hidden}}
                   <a
                     href
-                    {{action flag "hide" fingerprint "yes"}}
+                    {{action this.flag "hide" fingerprint "yes"}}
                     title={{i18n "js.fingerprint.unhide"}}
                   >{{d-icon "far-eye"}}</a>
                 {{else}}
                   <a
                     href
-                    {{action flag "hide" fingerprint}}
+                    {{action this.flag "hide" fingerprint}}
                     title={{i18n "js.fingerprint.hide"}}
                   >{{d-icon "eye-slash"}}</a>
                 {{/if}}
                 {{#if fingerprint.silenced}}
                   <a
                     href
-                    {{action flag "silence" fingerprint "yes"}}
+                    {{action this.flag "silence" fingerprint "yes"}}
                     title={{i18n "js.fingerprint.unsilence"}}
                   >{{d-icon "microphone"}}</a>
                 {{else}}
                   <a
                     href
                     class="silence"
-                    {{action flag "silence" fingerprint}}
+                    {{action this.flag "silence" fingerprint}}
                     title={{i18n "js.fingerprint.silence"}}
                   >{{d-icon "microphone-slash"}}</a>
                 {{/if}}
                 {{#if fingerprint.data}}
                   <a
                     href
-                    {{action showFingerprintData fingerprint.data}}
+                    {{action this.showFingerprintData fingerprint.data}}
                     title={{i18n "js.fingerprint.details"}}
                   >{{d-icon "info"}}</a>
                 {{/if}}

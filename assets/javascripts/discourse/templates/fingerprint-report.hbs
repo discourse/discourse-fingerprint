@@ -7,7 +7,7 @@
 
       <div class="section-body">
         {{email-group-user-chooser
-          value=username
+          value=this.username
           onChange=(action "updateUsername")
           options=(hash maximum=1 filterPlaceholder="user.username.title")
         }}
@@ -15,25 +15,25 @@
     </div>
   </div>
 
-  {{#if showReport}}
+  {{#if this.showReport}}
     {{fingerprint-user-report
-      user=user
-      users=users
-      fingerprints=fingerprints
+      user=this.user
+      users=this.users
+      fingerprints=this.fingerprints
       ignore=(action "ignore")
       flag=(action "flag")
       showFingerprintData=(action "showFingerprintData")
     }}
   {{else}}
     {{fingerprint-latest-matches
-      fingerprints=fingerprints
+      fingerprints=this.fingerprints
       viewReportForUser=(action "viewReportForUser")
       flag=(action "flag")
       showFingerprintData=(action "showFingerprintData")
     }}
 
     {{fingerprint-flagged
-      flagged=flagged
+      flagged=this.flagged
       flag=(action "flag")
       showFingerprintData=(action "showFingerprintData")
     }}
