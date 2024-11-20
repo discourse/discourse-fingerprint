@@ -10,7 +10,7 @@
       )
     }}
 
-    {{#if fingerprints.length}}
+    {{#if this.fingerprints.length}}
       <table>
         <thead>
           <tr>
@@ -18,7 +18,7 @@
             <th>{{i18n "fingerprint.results.hash"}}</th>
             <th>{{i18n "fingerprint.results.matches"}}</th>
             <th colspan="3">
-              {{input type="checkbox" id="hide-common" checked=hideCommon}}
+              {{input type="checkbox" id="hide-common" checked=this.hideCommon}}
               <label for="hide-common">{{i18n
                   "fingerprint.hide_common"
                 }}</label>
@@ -26,8 +26,8 @@
           </tr>
         </thead>
         <tbody>
-          {{#each fingerprints as |fingerprint|}}
-            {{#if (not (and hideCommon fingerprint.is_common))}}
+          {{#each this.fingerprints as |fingerprint|}}
+            {{#if (not (and this.hideCommon fingerprint.is_common))}}
               <tr>
                 <td>{{d-icon fingerprint.device_type}}</td>
                 <td>
@@ -52,12 +52,13 @@
                 </td>
                 <td>
                   {{#if fingerprint.hidden}}
-                    <a href {{action flag "hide" fingerprint "yes"}}>{{d-icon
-                        "far-eye"
-                      }}
+                    <a
+                      href
+                      {{action this.flag "hide" fingerprint "yes"}}
+                    >{{d-icon "far-eye"}}
                       {{i18n "js.fingerprint.unhide"}}</a>
                   {{else}}
-                    <a href {{action flag "hide" fingerprint}}>{{d-icon
+                    <a href {{action this.flag "hide" fingerprint}}>{{d-icon
                         "far-eye-slash"
                       }}
                       {{i18n "js.fingerprint.hide"}}</a>
@@ -65,15 +66,16 @@
                 </td>
                 <td>
                   {{#if fingerprint.silenced}}
-                    <a href {{action flag "silence" fingerprint "yes"}}>{{d-icon
-                        "microphone"
-                      }}
+                    <a
+                      href
+                      {{action this.flag "silence" fingerprint "yes"}}
+                    >{{d-icon "microphone"}}
                       {{i18n "js.fingerprint.unsilence"}}</a>
                   {{else}}
                     <a
                       href
                       class="silence"
-                      {{action flag "silence" fingerprint}}
+                      {{action this.flag "silence" fingerprint}}
                     >{{d-icon "microphone-slash"}}
                       {{i18n "js.fingerprint.silence"}}</a>
                   {{/if}}
@@ -82,7 +84,7 @@
                   {{#if fingerprint.data}}
                     <a
                       href
-                      {{action showFingerprintData fingerprint.data}}
+                      {{action this.showFingerprintData fingerprint.data}}
                     >{{d-icon "info"}} {{i18n "js.fingerprint.details"}}</a>
                   {{/if}}
                 </td>
