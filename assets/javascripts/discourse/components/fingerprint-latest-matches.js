@@ -1,5 +1,5 @@
 import Component from "@ember/component";
 
-export default Component.extend({
-  hideCommon: true,
-});
+export default class FingerprintLatestMatches extends Component {
+  hideCommon = true;
+}
