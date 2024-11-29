@@ -1,29 +1,29 @@
 import Controller from "@ember/controller";
-import EmberObject from "@ember/object";
+import EmberObject, { action } from "@ember/object";
 import { service } from "@ember/service";
 import { ajax } from "discourse/lib/ajax";
 import discourseComputed from "discourse-common/utils/decorators";
 import FingerprintDetails from "../components/modal/fingerprint-details";
 
-export default Controller.extend({
-  queryParams: ["username"],
+export default class FingerprintReportController extends Controller {
+  @service modal;
 
-  modal: service(),
+  queryParams = ["username"];
 
-  username: null,
-  user: null,
-  matches: [],
-  fingerprints: [],
+  username = null;
+  user = null;
+  matches = [];
+  fingerprints = [];
+
+  init() {
+    super.init(...arguments);
+    this.update();
+  }
 
   @discourseComputed("user", "username")
   showReport(user, username) {
     return user && username;
-  },
-
-  init() {
-    this._super(...arguments);
-    this.update();
-  },
+  }
 
   update(username) {
     this.setProperties({ fingerprints: [] });
@@ -72,54 +72,57 @@ export default Controller.extend({
         });
       });
     }
-  },
+  }
 
-  actions: {
-    updateUsername(selected) {
-      this.set("username", selected.firstObject);
-      this.update(selected.firstObject);
-    },
+  @action
+  updateUsername(selected) {
+    this.set("username", selected.firstObject);
+    this.update(selected.firstObject);
+  }
 
-    viewReportForUser(user) {
-      this.set("username", user.username);
-      return this.update(user.username);
-    },
+  @action
+  viewReportForUser(user) {
+    this.set("username", user.username);
+    return this.update(user.username);
+  }
 
-    showFingerprintData(data) {
-      const dataStr = {};
-      Object.keys(data).forEach((key) => {
-        dataStr[key] =
-          data[key] !== null && typeof data[key] === "object"
-            ? JSON.stringify(data[key])
-            : data[key];
-      });
-      this.modal.show(FingerprintDetails, { model: { data: dataStr } });
-    },
+  @action
+  showFingerprintData(data) {
+    const dataStr = {};
+    Object.keys(data).forEach((key) => {
+      dataStr[key] =
+        data[key] !== null && typeof data[key] === "object"
+          ? JSON.stringify(data[key])
+          : data[key];
+    });
+    this.modal.show(FingerprintDetails, { model: { data: dataStr } });
+  }
 
-    flag(type, fingerprint, remove) {
-      return ajax("/admin/plugins/fingerprint/flag", {
-        type: "PUT",
-        data: { type, value: fingerprint.value, remove },
-      }).then(() => {
-        if (type === "hide") {
-          fingerprint.set("hidden", !remove);
-        } else if (type === "silence") {
-          fingerprint.set("silenced", !remove);
-        }
-      });
-    },
+  @action
+  flag(type, fingerprint, remove) {
+    return ajax("/admin/plugins/fingerprint/flag", {
+      type: "PUT",
+      data: { type, value: fingerprint.value, remove },
+    }).then(() => {
+      if (type === "hide") {
+        fingerprint.set("hidden", !remove);
+      } else if (type === "silence") {
+        fingerprint.set("silenced", !remove);
+      }
+    });
+  }
 
-    ignore(otherUser, remove) {
-      return ajax("/admin/plugins/fingerprint/ignore", {
-        type: "POST",
-        data: {
-          username: this.username,
-          other_username: otherUser.username,
-          remove,
-        },
-      }).then(() => {
-        otherUser.set("ignored", !remove);
-      });
-    },
-  },
-});
+  @action
+  ignore(otherUser, remove) {
+    return ajax("/admin/plugins/fingerprint/ignore", {
+      type: "POST",
+      data: {
+        username: this.username,
+        other_username: otherUser.username,
+        remove,
+      },
+    }).then(() => {
+      otherUser.set("ignored", !remove);
+    });
+  }
+}
