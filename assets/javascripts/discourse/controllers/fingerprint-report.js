@@ -2,7 +2,7 @@ import Controller from "@ember/controller";
 import EmberObject, { action } from "@ember/object";
 import { service } from "@ember/service";
 import { ajax } from "discourse/lib/ajax";
-import discourseComputed from "discourse-common/utils/decorators";
+import discourseComputed from "discourse/lib/decorators";
 import FingerprintDetails from "../components/modal/fingerprint-details";
 
 export default class FingerprintReportController extends Controller {
