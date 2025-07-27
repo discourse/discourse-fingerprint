@@ -3,36 +3,49 @@
 class Fingerprint < ActiveRecord::Base
   belongs_to :user
 
+  # Selects fingerprints that are shared by more than one user.
+  # Groups by the fingerprint hash ('value') for efficiency, as it's the canonical representation.
   def self.matches
-    select(:name, :value, :data, "ARRAY_AGG(user_id ORDER BY user_id) user_ids").group(
-      :value,
-      :name,
-      :data,
-    ).having("COUNT(*) > 1")
+    select(:name, :value, "MAX(data) AS data", "ARRAY_AGG(user_id ORDER BY user_id) AS user_ids")
+      .group(:name, :value)
+      .having("COUNT(user_id) > 1")
   end
 
-  def self.create_or_touch!(attributes)
-    if fingerprint = Fingerprint.find_by(attributes.slice(:user, :user_id, :value))
+  # Finds an existing fingerprint for the user or creates a new one.
+  # If found, it updates the `updated_at` timestamp to mark recent activity.
+  def self.find_or_create_with_touch!(attributes)
+    # Ensure we are looking up with the correct, indexed attributes.
+    lookup_attrs = { user_id: attributes[:user_id], value: attributes[:value] }
+
+    if (fingerprint = find_by(lookup_attrs))
       fingerprint.touch
-      return fingerprint
+      fingerprint
+    else
+      create!(attributes)
     end
-
-    create!(attributes)
   end
 
+  # Computes a secure and consistent hash from the fingerprint data.
+  # Uses SHA256, a more modern and secure hashing algorithm than SHA1.
   def self.compute_hash(data)
-    Digest::SHA1.hexdigest(data.values.map(&:to_s).sort.to_s)
+    # Sorting values ensures the hash is consistent regardless of key order.
+    canonical_string = data.values.map(&:to_s).sort.join
+    Digest::SHA256.hexdigest(canonical_string)
   end
 
-  def self.is_common(data)
-    return if data.blank?
+  # A simple check to identify fingerprints from common mobile Apple devices.
+  # These are often too generic to be useful for identifying unique users.
+  def self.is_common?(data)
+    return false if data.blank?
 
-    platform = data["navigator_platform"]
-    user_agent = data["User-Agent"] || data["user_agent"]
+    platform = data["navigator_platform"].to_s
+    user_agent = (data["User-Agent"] || data["user_agent"]).to_s
 
+    # Regex checks for common iOS/iPadOS devices and generic Safari UAs.
     !!(
-      platform =~ /(iPad|iPhone|iPod)/ || user_agent =~ %r{Version/(\d+).+?Safari} ||
-        user_agent =~ /(iPad|iPhone|iPod)/
+      platform.match?(/iPad|iPhone|iPod/) ||
+      user_agent.match?(%r{Version/(\d+).+?Safari}) ||
+      user_agent.match?(/iPad|iPhone|iPod/)
     )
   end
 end
