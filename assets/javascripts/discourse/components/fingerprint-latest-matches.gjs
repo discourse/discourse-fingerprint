@@ -1,11 +1,11 @@
 import Component, { Input } from "@ember/component";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
+import { htmlSafe } from "@ember/template";
 import { and, not } from "truth-helpers";
 import UserLink from "discourse/components/user-link";
 import avatar from "discourse/helpers/avatar";
 import icon from "discourse/helpers/d-icon";
-import htmlSafe from "discourse/helpers/html-safe";
 import { i18n } from "discourse-i18n";
 
 export default class FingerprintLatestMatches extends Component {

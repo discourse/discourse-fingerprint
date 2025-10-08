@@ -18,7 +18,7 @@ class DiscourseFingerprint::FingerprintAdminController < Admin::AdminController
         .select(:name, :value, :data, "COUNT(*) count")
         .where(value: FlaggedFingerprint.select(:value))
         .group(:name, :value, :data)
-        .to_h { |fp| [fp.value, fp] }
+        .index_by { |fp| fp.value }
 
     users = User.where(id: matches.map(&:user_ids).flatten.uniq)
 
@@ -28,7 +28,7 @@ class DiscourseFingerprint::FingerprintAdminController < Admin::AdminController
                  matches,
                  FingerprintSerializer,
                  scope: {
-                   flagged: flagged.to_h { |fp| [fp.value, fp] },
+                   flagged: flagged.index_by { |fp| fp.value },
                  },
                ),
              flagged:

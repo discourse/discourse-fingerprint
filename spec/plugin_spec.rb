@@ -3,9 +3,9 @@
 require "rails_helper"
 
 describe ::DiscourseFingerprint do
-  fab!(:user1) { Fabricate(:user) }
-  fab!(:user2) { Fabricate(:user) }
-  fab!(:user3) { Fabricate(:user) }
+  fab!(:user1, :user)
+  fab!(:user2, :user)
+  fab!(:user3, :user)
 
   it "can add, get and remove ignores" do
     expect(described_class.get_ignores(user1)).to contain_exactly
