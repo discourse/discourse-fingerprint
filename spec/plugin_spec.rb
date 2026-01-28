@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "rails_helper"
-
 describe ::DiscourseFingerprint do
   fab!(:user1, :user)
   fab!(:user2, :user)

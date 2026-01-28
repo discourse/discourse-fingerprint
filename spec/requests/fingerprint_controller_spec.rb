@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "rails_helper"
-
 describe DiscourseFingerprint::FingerprintController do
   let(:user) { Fabricate(:user) }
 
