@@ -1,17 +1,18 @@
+/* eslint-disable ember/no-classic-components, ember/require-tagless-components */
 import Component from "@ember/component";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
+import { computed } from "@ember/object";
 import UserLink from "discourse/components/user-link";
 import avatar from "discourse/helpers/avatar";
 import icon from "discourse/helpers/d-icon";
 import formatDate from "discourse/helpers/format-date";
-import discourseComputed from "discourse/lib/decorators";
 import { i18n } from "discourse-i18n";
 
 export default class FingerprintUserReport extends Component {
-  @discourseComputed("users")
-  usersArray(users) {
-    return Object.values(users);
+  @computed("users")
+  get usersArray() {
+    return Object.values(this.users);
   }
 
   <template>

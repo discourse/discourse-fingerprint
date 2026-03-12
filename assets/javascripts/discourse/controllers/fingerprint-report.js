@@ -1,8 +1,7 @@
 import Controller from "@ember/controller";
-import EmberObject, { action } from "@ember/object";
+import EmberObject, { action, computed } from "@ember/object";
 import { service } from "@ember/service";
 import { ajax } from "discourse/lib/ajax";
-import discourseComputed from "discourse/lib/decorators";
 import FingerprintDetails from "../components/modal/fingerprint-details";
 
 export default class FingerprintReportController extends Controller {
@@ -20,9 +19,9 @@ export default class FingerprintReportController extends Controller {
     this.update();
   }
 
-  @discourseComputed("user", "username")
-  showReport(user, username) {
-    return user && username;
+  @computed("user", "username")
+  get showReport() {
+    return this.user && this.username;
   }
 
   update(username) {
