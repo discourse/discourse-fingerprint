@@ -2,7 +2,7 @@
 import Component, { Input } from "@ember/component";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
-import { htmlSafe } from "@ember/template";
+import { trustHTML } from "@ember/template";
 import UserLink from "discourse/components/user-link";
 import avatar from "discourse/helpers/avatar";
 import icon from "discourse/helpers/d-icon";
@@ -18,7 +18,7 @@ export default class FingerprintLatestMatches extends Component {
         <h2>{{i18n "fingerprint.latest_matches"}}</h2>
       </div>
       <div class="section-body">
-        {{htmlSafe
+        {{trustHTML
           (i18n
             "fingerprint.latest_matches_instructions"
             algorithm="<a href='https://github.com/Valve/fingerprintjs2'>Fingeprintjs2</a>"

@@ -2,7 +2,7 @@
 import Component from "@ember/component";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
-import { htmlSafe } from "@ember/template";
+import { trustHTML } from "@ember/template";
 import icon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 
@@ -13,7 +13,7 @@ export default class FingerprintFlagged extends Component {
         <h2>{{i18n "fingerprint.flagged"}}</h2>
       </div>
       <div class="section-body">
-        {{htmlSafe (i18n "fingerprint.flagged_instructions")}}
+        {{trustHTML (i18n "fingerprint.flagged_instructions")}}
 
         {{#if this.flagged.length}}
           <table>
