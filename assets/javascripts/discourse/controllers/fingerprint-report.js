@@ -75,8 +75,8 @@ export default class FingerprintReportController extends Controller {
 
   @action
   updateUsername(selected) {
-    this.set("username", selected.firstObject);
-    this.update(selected.firstObject);
+    this.set("username", selected[0]);
+    this.update(selected[0]);
   }
 
   @action
