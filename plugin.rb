@@ -68,7 +68,7 @@ after_initialize do
   DiscourseFingerprint::Engine.routes.draw do
     post "/fingerprint" => "fingerprint#index"
 
-    get "/admin/plugins/fingerprint" => "fingerprint_admin#index"
+    get "/admin/plugins/fingerprint/matches" => "fingerprint_admin#matches"
     get "/admin/plugins/fingerprint/user_report" => "fingerprint_admin#user_report"
     put "/admin/plugins/fingerprint/flag" => "fingerprint_admin#flag"
     post "/admin/plugins/fingerprint/ignore" => "fingerprint_admin#ignore"
