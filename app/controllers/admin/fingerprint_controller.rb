@@ -3,7 +3,8 @@
 class DiscourseFingerprint::FingerprintAdminController < Admin::AdminController
   requires_plugin DiscourseFingerprint::PLUGIN_NAME
 
-  def index
+  # Lists the latest fingerprint matches and the flagged fingerprints.
+  def matches
     matches =
       Fingerprint
         .matches
