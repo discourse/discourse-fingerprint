@@ -50,7 +50,7 @@ describe DiscourseFingerprint::FingerprintController do
       }.to change { Fingerprint.count }.by(1)
 
       expect(response.status).to eq(200)
-      expect(response.headers["Set-Cookie"]).to start_with("fp=")
+      expect(Array(response.headers["Set-Cookie"]).join("\n")).to start_with("fp=")
 
       expect {
         SiteSetting.fingerprint_ip = true
